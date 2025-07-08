@@ -1,0 +1,16 @@
+# Mitä olen tehnyt tällä viikolla?
+- Loin git-repon harjoitustyölle ja muistuttelin mieleen mitä kaikkea tähän liittyikään
+- Latasin musiikin python-käsittelyyn tarvittavia työkaluja
+- Suunnittelin ohjelman toteutuksen aikataulua ja tulevia töitä
+
+# Miten ohjelma on edistynyt?
+- Ohjelmaa ei ole vielä aloitettu
+
+# Mitä opin tällä viikolla / tänään?
+- Gitin perusteiden muistiin palauttamista
+- Projektin sisällön suunnittelua 
+
+Mikä jäi epäselväksi tai tuottanut vaikeuksia?
+
+Mitä teen seuraavaksi?
+- Aloitan toteutuksen
