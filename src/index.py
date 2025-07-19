@@ -10,9 +10,9 @@ if __name__ == "__main__":
     for track in midi_file.tracks:
         for msg in track:
             if msg.type == 'note_on':
-                note_value = msg.note  # Nuotin arvo
-                trie.insert(note_value)  # Lisää trie-rakenteeseen
-    
+                note_value = msg.note 
+                trie.insert(note_value)  
+                    
     all_notes = trie.get_all_notes()
     print(all_notes)
 
