@@ -31,8 +31,8 @@ class Trie:
     def visualize(self):
         dot = Digraph()
         self._add_nodes(dot, self.root, "")
-        dot.render('trie_structure', format='png', cleanup=True)  # Tallenna kuva tiedostoon
-        dot.view()  # Avaa kuva oletuskuvankatseluohjelmassa
+        dot.render('trie_structure', format='png', cleanup=True)
+        dot.view() 
     
     def _add_nodes(self, dot, node, prefix):
         if node.frequency > 0:
