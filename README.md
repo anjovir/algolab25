@@ -1,0 +1,1 @@
+The project is about Markov chains and how to generate simple melodies based on input songs.
