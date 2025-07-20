@@ -1,0 +1,24 @@
+## Mitä olen tehnyt tällä viikolla?
+- nuottien syöttäminen trie-rakenteeseen ja tämän toimivuuden tarkistus
+- nuottien generointi
+- testaamisen perusteet
+
+## Miten ohjelma on edistynyt?
+- trie-rakenne näyttäisi nyt toimivan, samoin nuottisekvenssin generointi perustuen eri pituisiin Markovin ketjuihin
+
+## Mitä opin tällä viikolla / tänään?
+- trie-rakenteen käytännön toteutus 
+- trie-rakenteeen ja Markovin ketjun yhdistäminen ja nuottien generoiminen perustuen kappaleessa esiintyvään sekvenssiin
+- pygamen hyödyntäminen midi-soittimena melodian soittamiseen
+- yksikkötestaamista
+
+## Mikä jäi epäselväksi tai tuottanut vaikeuksia?
+- trie-rakenne näyttäisi olevan  nyt kunnossa, mutta tämän tarkasteluun voisi vielä luoda erillisen metodin
+
+## Käytetty tuntimäärä
+- 9
+
+## Mitä teen seuraavaksi?
+- testausta
+- Markovin ketjun hyödyntäminen melodian rytmin generoimiseksi
+- metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta
