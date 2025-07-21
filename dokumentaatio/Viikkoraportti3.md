@@ -9,6 +9,7 @@
 ## Mitä opin tällä viikolla / tänään?
 - trie-rakenteen käytännön toteutus 
 - trie-rakenteeen ja Markovin ketjun yhdistäminen ja nuottien generoiminen perustuen kappaleessa esiintyvään sekvenssiin
+- syötedatan uniikkien sekvenssien hakeminen trie-rakenteesta ja listaaminen
 - pygamen hyödyntäminen midi-soittimena melodian soittamiseen
 - yksikkötestaamista
 
@@ -16,7 +17,7 @@
 - trie-rakenne näyttäisi olevan  nyt kunnossa, mutta tämän tarkasteluun voisi vielä luoda erillisen metodin
 
 ## Käytetty tuntimäärä
-- 9
+- 11
 
 ## Mitä teen seuraavaksi?
 - testausta

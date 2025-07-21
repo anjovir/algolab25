@@ -1,5 +1,8 @@
 import random
 
+counter = 0
+null_counter = 0
+
 class TrieNode:
     def __init__(self):
         self.children = [[None, 0] for _ in range(128)]
@@ -27,16 +30,38 @@ class Trie:
                 curr_node = curr_node.children[notes[n + i]][0]
 
     def get_all_notes(self):
-        notes = {}
+        notes = {i: 0 for i in range(128)}
         self._collect_notes(self.root, notes)
         return notes
 
     def _collect_notes(self, node, notes):      
         for i in range(128):
             if node.children[i][1] > 0:
-                notes[i] = node.children[i][1]
+                notes[i] += node.children[i][1]
                 self._collect_notes(node.children[i][0], notes)
     
+    def generate_random_sequence_from_data(self, order=3):
+        seqs = self._get_unique_sequences(order)
+        return seqs[random.randint(0, (len(seqs) - 1))]
+
+    
+    def _get_unique_sequences(self, order=3):
+        seqs = []
+        self._collect_sequences(self.root, seqs, order, seq=[])
+        return seqs
+
+    def _collect_sequences(self, node, seqs, order, seq):
+        for i in range(128):
+            if node.children[i][1] > 0:
+                if len(seq) < order:
+                    seq.append(i)
+                    self._collect_sequences(node.children[i][0], seqs, order, seq)
+                else:
+                    if seq not in seqs and len(seq) == order:
+                        seqs.append(seq)
+                    seq = []
+    
+       
     def sequence_exist(self, sequence):
         curr_node = self.root
 

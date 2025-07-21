@@ -18,9 +18,10 @@ if __name__ == "__main__":
     
     trie.insert(all_notes, mc_order)
 
-    sequence = [76, 72, 76]
+    sequence = trie.generate_random_sequence_from_data(2)
+    print(sequence)
     
-    song = trie.generate_song(sequence, 30)
+    song = trie.generate_song(sequence, 20)
     print(song)
     
     midi_player = MidiPlayer()
