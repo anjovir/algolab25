@@ -1,24 +1,24 @@
-import pygame
-import numpy as np
-import pygame.midi
-import time
-import mido
-class MidiPlayer():
-    def __init__(self):
-        pass
+#import pygame
+#import numpy as np
+#import pygame.midi
+#import time
+#import mido
+#class MidiPlayer():
+#    def __init__(self):
+#        pass
 
-    def play_notes(self, notes, duration):
-        pygame.init()
-        pygame.midi.init()
-        midi_output=pygame.midi.Output(0)
-        for note in notes:
-            midi_output.note_on(note, 127)  # Soitetaan nuotti (127 on äänenvoimakkuus)
-            time.sleep(duration)  # Odotetaan nuotin kesto
-            midi_output.note_off(note, 127)  # Lopetetaan nuotti
+    #def play_notes(self, notes, duration):
+    #    pygame.init()
+    #    pygame.midi.init()
+    #    midi_output=pygame.midi.Output(0)
+    #    for note in notes:
+    #        midi_output.note_on(note, 127)  # Soitetaan nuotti (127 on äänenvoimakkuus)
+    #        time.sleep(duration)  # Odotetaan nuotin kesto
+    #        midi_output.note_off(note, 127)  # Lopetetaan nuotti
         
-        midi_output.close()
-        pygame.midi.quit()
-        pygame.quit()
+    #    midi_output.close()
+    #    pygame.midi.quit()
+    #    pygame.quit()
 
 #    def play_note2(note):
 #        frequency = 440 * 2 ** ((note - 69) / 12)  # Change the note value to frequency

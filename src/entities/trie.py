@@ -6,14 +6,13 @@ null_counter = 0
 class TrieNode:
     def __init__(self):
         self.children = [[None, 0] for _ in range(128)]
-        self.last_node = False
     
     def __str__(self):
         return f"self.children: {self.children}"
 
 class Trie:
-    def __init__(self):
-        self.root = TrieNode()
+    def __init__(self, root_node):
+        self.root = root_node
 
     def insert(self, notes, max_order=100):
         curr_node = self.root
@@ -40,11 +39,6 @@ class Trie:
                 notes[i] += node.children[i][1]
                 self._collect_notes(node.children[i][0], notes)
     
-    def generate_random_sequence_from_data(self, order=3):
-        seqs = self._get_unique_sequences(order)
-        return seqs[random.randint(0, (len(seqs) - 1))]
-
-    
     def _get_unique_sequences(self, order=3):
         seqs = []
         self._collect_sequences(self.root, seqs, order, seq=[])
@@ -58,10 +52,9 @@ class Trie:
                     self._collect_sequences(node.children[i][0], seqs, order, seq)
                 else:
                     if seq not in seqs and len(seq) == order:
-                        seqs.append(seq)
+                       seqs.append(seq)
                     seq = []
-    
-       
+      
     def sequence_exist(self, sequence):
         curr_node = self.root
 

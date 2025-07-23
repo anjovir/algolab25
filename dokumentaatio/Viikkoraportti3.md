@@ -1,10 +1,12 @@
 ## Mitä olen tehnyt tällä viikolla?
 - nuottien syöttäminen trie-rakenteeseen ja tämän toimivuuden tarkistus
 - nuottien generointi
+- käyttöliittymän rakentaminen
 - testaamisen perusteet
 
 ## Miten ohjelma on edistynyt?
 - trie-rakenne näyttäisi nyt toimivan, samoin nuottisekvenssin generointi perustuen eri pituisiin Markovin ketjuihin
+- olen rakentanut yksinkertaisen käyttöliittymän ohjelmallee eri parametrien säätämiseen
 
 ## Mitä opin tällä viikolla / tänään?
 - trie-rakenteen käytännön toteutus 
@@ -17,7 +19,7 @@
 - trie-rakenne näyttäisi olevan  nyt kunnossa, mutta tämän tarkasteluun voisi vielä luoda erillisen metodin
 
 ## Käytetty tuntimäärä
-- 11
+- 18
 
 ## Mitä teen seuraavaksi?
 - testausta
