@@ -3,6 +3,7 @@ from tkinter import font, ttk, constants, filedialog, messagebox
 from output.midi_player import MidiSongPlayer
 from entities.trie import Trie
 from services.trie_service import TrieService
+from services.midi_service  import MidiService
 
 
 
@@ -11,6 +12,7 @@ class MidiApp:
         self._root = root
         self._player = MidiSongPlayer(None)
         self._trie_service = TrieService()
+        self._midi_service = MidiService()
         self._file_path = "src\data\Super Mario Bross (Theme Song) - melody.mid"
         #self._starting_sequence = []
 
@@ -112,7 +114,7 @@ class MidiApp:
     
     def generate_song_notes(self):
         self._song_notes = self._trie_service.generate_song(self._starting_sequence, self.choose_song_lenght_slider.get())
-        self._trie_service.save_generated_song(self._song_notes, tempo=self.set_tempo_slider.get())
+        self._midi_service.save_generated_song(self._song_notes, tempo=self.set_tempo_slider.get())
 
     def print_song_notes(self):
         sequence = str(self._song_notes)
