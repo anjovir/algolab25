@@ -7,6 +7,7 @@
 ## Miten ohjelma on edistynyt?
 - trie-rakenne näyttäisi nyt toimivan, samoin nuottisekvenssin generointi perustuen eri pituisiin Markovin ketjuihin
 - olen rakentanut yksinkertaisen käyttöliittymän ohjelmallee eri parametrien säätämiseen
+- metodi uuden kappaleen lataamiseen trie-rakenteeseen täytyy uudistaa
 
 ## Mitä opin tällä viikolla / tänään?
 - trie-rakenteen käytännön toteutus 

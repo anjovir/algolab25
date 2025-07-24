@@ -83,14 +83,3 @@ class Trie:
             return False
         next_note = notes[random.randint(0,len(notes)-1)]
         return next_note
-    
-    def generate_song(self, sequence, length):
-        markov_chain_song = []
-        markov_chain_song.extend(sequence)
-        for i in range(length):
-            generated_note = self.get_next_note(sequence)
-            markov_chain_song.append(generated_note)
-            sequence.pop(0)
-            sequence.append(generated_note)
-
-        return markov_chain_song

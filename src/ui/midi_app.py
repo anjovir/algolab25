@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import font, ttk, constants, filedialog, messagebox
-from output.midi_player import MidiSongPlayer
+from services.midi_player import MidiSongPlayer
 from entities.trie import Trie
 from services.trie_service import TrieService
 from services.midi_service  import MidiService
