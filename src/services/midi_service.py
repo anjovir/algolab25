@@ -1,6 +1,5 @@
 import mido
 from entities.trie import Trie
-import music21
 
 midi_song_number = 0
 
@@ -19,6 +18,7 @@ class MidiService:
                     all_notes.append(note_value)
         
         return all_notes
+        
 
     def _read_midi_file_rhythms(self, file_path):
         # This method reads the midi-file and packets the rhythms to a bar based rhythms
@@ -42,7 +42,7 @@ class MidiService:
                 messages[msg_counter] = msg
                 note_or_rest = False
                 if msg.type == "note_on":
-                    if messages[msg_counter-1].type == "time_signature":
+                    if messages[msg_counter-1].type == "time_signature" and messages[msg_counter-1].time != 0:
                         duration = messages[msg_counter-1].time
                         bar_lenght = tpb * time_signatures[ts_counter - 1][0] * (4 // time_signatures[ts_counter - 1][1])
                         note_or_rest = True
@@ -71,7 +71,6 @@ class MidiService:
                     time_signatures.append((msg.numerator, msg.denominator))
                     ts_counter += 1
                     bar_lenght = tpb * msg.numerator * (4 // msg.denominator)
-                    duration = msg.time
                 elif msg.type == "set_tempo":
                     bpms.append(mido.tempo2bpm(msg.tempo))
                 
@@ -105,11 +104,11 @@ class MidiService:
                         ts_note_flag = False
                         bar_lenght = tpb * time_signatures[ts_counter][0] * (4 // time_signatures[ts_counter][1])
 
-        #self.diagnose_score_rhythm_problems(rhythm_score, messages)
+        #self.diagnose_rhythm_score_problems(rhythm_score, messages)
             
         return rhythm_score
     
-    def diagnose_score_rhythm_problems(self, rhythm_score, messages):
+    def diagnose_rhythm_score_problems(self, rhythm_score, messages):
         sums = []
         count_bars = 0
 
