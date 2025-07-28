@@ -3,12 +3,13 @@ import pygame.midi
 import mido
 from threading import Thread
 
+
 class MidiSongPlayer:
     def __init__(self, file_path):
         self.file_path = file_path
         self.is_playing = False
         self.thread = None
-    
+
     def __str__(self):
         default = "None-type object"
         if self.file_path == None:
@@ -21,7 +22,7 @@ class MidiSongPlayer:
         player = pygame.midi.Output(0)
 
         mid = mido.MidiFile(self.file_path)
-        
+
         self.is_playing = True
         for msg in mid.play():
             if not self.is_playing:
@@ -47,4 +48,3 @@ class MidiSongPlayer:
         self.is_playing = False
         if self.thread is not None:
             self.thread.join()  # Wait for playing to stop
-    
