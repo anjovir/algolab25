@@ -84,11 +84,17 @@ class MidiApp:
         self.stop_button = tk.Button(master=self._frame2, text="Stop", command=self._player.stop_playing)
         self.stop_button.pack(pady=10)
 
+        self.reset_trie_button = tk.Button(master=self._frame2, text="Reset trie", command=self.reset_trie)
+        self.reset_trie_button.pack(pady=10)
+
         self.starting_seq = tk.Label(master=self._frame2, text="")
         self.starting_seq.pack(pady=10)
 
         self.song_notes = tk.Label(master=self._frame2, text="")
         self.song_notes.pack(pady=10)
+
+    def reset_trie(self):
+        self._trie_service = TrieService()
 
     def play(self):
         self._player.start_playing()
