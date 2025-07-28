@@ -1,10 +1,6 @@
-import mido
 from entities.trie import Trie, TrieNode
 import random
 from services.midi_service import MidiService
-
-midi_song_number = 1
-
 
 class TrieService:
     def __init__(self, order=10):
