@@ -101,7 +101,6 @@ class MidiService:
                     continue
                 else:
                     # Rest duration has to be applied to a next note_on message
-                    print("KÄYTY", n, n+1, score[n], rest_length)
                     track.append(mido.Message(
                         'note_on', note=score[n + 1][0], velocity=80, time=rest_length))
                     track.append(mido.Message(

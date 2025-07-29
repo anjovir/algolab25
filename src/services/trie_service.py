@@ -5,9 +5,7 @@ from services.midi_service import MidiService
 class TrieService:
     def __init__(self, order=10):
         self.root = TrieNode()
-        self.root_rhythm = TrieNode()
         self.trie = Trie(self.root)
-        self.trie_rhythm = Trie(self.root_rhythm)
         self._mc_order = order
         self._trie_read_succesfully = False
         self._midi_service = MidiService()
@@ -19,7 +17,6 @@ class TrieService:
     def _insert_to_trie(self, notes, mc_order):
         self.trie.insert(notes, mc_order)
         for node in self.root.children.values():
-            print(node)
             if isinstance(node[0], TrieNode):
                 return True
         return False
@@ -27,25 +24,6 @@ class TrieService:
     def generate_random_sequence_from_data(self, order=3):
         seqs = self.trie._get_unique_sequences(order)
         return seqs[random.randint(0, (len(seqs) - 1))]
-
-    def get_next_note(self, sequence):
-        curr_node = self.root
-        for note in sequence:
-            if curr_node.children[note][0] is None:
-                return False
-
-            curr_node = curr_node.children[note][0]
-
-        notes = []
-        for i in range(128):
-            if curr_node.children[i][1] > 0:
-                for j in range(curr_node.children[i][1]):
-                    notes.append(i)
-
-        if len(notes) < 1:
-            return False
-        next_note = notes[random.randint(0, len(notes)-1)]
-        return next_note
 
     def generate_song(self, sequence, length):
         length = length - len(sequence)

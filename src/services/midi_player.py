@@ -3,7 +3,6 @@ import pygame.midi
 import mido
 from threading import Thread
 
-
 class MidiSongPlayer:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -47,4 +46,4 @@ class MidiSongPlayer:
     def stop_playing(self):
         self.is_playing = False
         if self.thread is not None:
-            self.thread.join()  # Wait for playing to stop
+            self.thread.join()
