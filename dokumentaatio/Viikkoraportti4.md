@@ -5,23 +5,22 @@
 
 ## Miten ohjelma on edistynyt?
 - ohjelma edistyy, nyt täytyy hioa käyttöliittymän bugeja pois ja alkaa testaamaan enemmän
-- itse ydinongelmassa on vielä paljonkin tekemistä, esim. tauot 
 
 ## Mitä opin tällä viikolla / tänään?
 - trie-rakenteen rakentaminen hyödyntäen sanakirjaa
-- Markovin ketjuejen hyödyntäminen rytmin generoimiseen (paljon hankalampaa pelkkien nuottien generoiminen)
+- Markovin ketjuejen hyödyntäminen rytmin generoimiseen
 - midon hyödyntäminen midi-tiedoston tallentamisessa
 - (yksikkö)testaamista
 
 ## Mikä jäi epäselväksi tai tuottanut vaikeuksia?
-- testannut eri tapoja sisällyttää rytmi sekvenssiin. Alkuperäinen tapa, jossa nuottisekvenssit ja rytmit generoitiin erikseen (jälkimmäinen perustuen kokonaisiin tahteihin ja miten ne seuraavat toisiaan) ei toiminut ja tuloksena tuli vielä (nykyistäkin) surkeampaa jälkeä
-- nyt tehty metodi, jossa nuotit ja niiden kestot tallennetaan samaan trie-rakenteeseen tuottaa parempia tuloksia, mutta kappaleet, joissa on paljon taukoja, aiheuttaa generoidussa kappaleessa sekaisuutta (päällekkäin soivia nuotteja) ja rytmit eivät osu tahteihin - kuitenkin tulos on parempi kuin jos rytmi ja nuottisekvenssi generoitaisiin toisista riippumatta - tässä on työstöä
+- testannut eri tapoja sisällyttää rytmi sekvenssiin. Alkuperäinen tapa, jossa nuottisekvenssit ja rytmit generoitiin erikseen (jälkimmäinen perustuen kokonaisiin tahteihin ja miten ne seuraavat toisiaan) ei toiminut ja tulos ei tyydyttänyt
+- nyt tehty metodi, jossa nuotit ja niiden kestot tallennetaan samaan trie-rakenteeseen tuottaa parempia tuloksia, vaikkakaan melodiat eivät noudata tahtien kestoja.
 
 ## Käytetty tuntimäärä
-- 5
+- 9
 
 ## Mitä teen seuraavaksi?
 - testausta
-- täytyy kehittää jokin järkevä, jossa on triehen on tallennettu sekä nuotti, että sen kesto ja saada Markovin ketjun generoimismetodia päivitettyä siten, että saataisiin aikaan täysiä tahtilajeja ja tauot myös selkeytettyä siten, että päällekkäisiä nuotteja soisi nykyisessä määrin
 - metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta.
 - käyttöliittymän hiomista
+- generoituja nuottiketjuja voisi hioa siten, että se noudattaisi selkeämmin jotain tahtilajia
