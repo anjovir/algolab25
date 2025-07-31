@@ -26,7 +26,7 @@ class Trie:
                 curr_node.children[index][1] += 1
                 curr_node = curr_node.children[index][0]
 
-    def _get_unique_sequences(self, order=3):
+    def get_unique_sequences(self, order=3):
         seqs = []
         self._collect_sequences(self.root, seqs, order, seq=[])
         return seqs
@@ -38,10 +38,9 @@ class Trie:
                     seq.append(n)
                     self._collect_sequences(
                         node.children[n][0], seqs, order, seq)
-                else:
-                    if seq not in seqs and len(seq) == order:
-                        seqs.append(seq)
-                    seq = []
+                elif seq not in seqs and len(seq) == order:
+                    seqs.append(seq)
+                seq = []
 
     def get_next_note(self, sequence):
         curr_node = self.root
@@ -54,8 +53,7 @@ class Trie:
         elements = []
         for n in curr_node.children:
             if curr_node.children[n][1] > 0:
-                for j in range(curr_node.children[n][1]):
-                    elements.append(n)
+                elements.extend([n]*curr_node.children[n][1])
 
         if len(elements) < 1:
             return False

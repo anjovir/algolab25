@@ -1,5 +1,5 @@
-from entities.trie import Trie, TrieNode
 import random
+from entities.trie import Trie, TrieNode
 from services.midi_service import MidiService
 
 class TrieService:
@@ -11,7 +11,7 @@ class TrieService:
         self._midi_service = MidiService()
 
     def _read_file(self, file_path, mc_order):
-        all_notes = self._midi_service._read_midi_file(file_path)
+        all_notes = self._midi_service.read_midi_file(file_path)
         self._trie_read_succesfully = self._insert_to_trie(all_notes, mc_order)
 
     def _insert_to_trie(self, notes, mc_order):
@@ -22,13 +22,14 @@ class TrieService:
         return False
 
     def generate_random_sequence_from_data(self, order=3):
-        seqs = self.trie._get_unique_sequences(order)
+        seqs = self.trie.get_unique_sequences(order)
         return seqs[random.randint(0, (len(seqs) - 1))]
 
     def generate_song(self, sequence, length):
         length = length - len(sequence)
         markov_chain_song = []
-        [markov_chain_song.append(s) for s in sequence]
+        for s in sequence:
+            markov_chain_song.append(s)
         while_counter = 0
         for i in range(length):
             generated_note = self.trie.get_next_note(sequence)

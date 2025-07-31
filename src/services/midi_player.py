@@ -1,7 +1,8 @@
+from threading import Thread
 import pygame
 import pygame.midi
 import mido
-from threading import Thread
+
 
 class MidiSongPlayer:
     def __init__(self, file_path):
@@ -11,7 +12,7 @@ class MidiSongPlayer:
 
     def __str__(self):
         default = "None-type object"
-        if self.file_path == None:
+        if self.file_path is None:
             return default
         return self.file_path
 

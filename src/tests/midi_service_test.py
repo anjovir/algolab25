@@ -21,7 +21,7 @@ class TestMidiService(unittest.TestCase):
 
     def test_read_midi_file_path(self):
         file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
-        score = self.midi_service._read_midi_file(file_path)
+        score = self.midi_service.read_midi_file(file_path)
         self.assertEqual(score[0], (76, 120))
 
     def test_save_last_note(self):
@@ -29,8 +29,8 @@ class TestMidiService(unittest.TestCase):
         original_score = [(80, 120),(82, 120),(200, 120),(200, 120),(80, 120),(90, 120),(83, 120),(200, 120)]
         file_name = "tests/last_note"
         midi_service1.save_generated_song(original_score, 120, file_name)
-        file_path = f"src\\data\\{file_name}.mid"
-        score = midi_service1._read_midi_file(file_path)
+        file_path = f"src\\data\\{file_name}{0}.mid"
+        score = midi_service1.read_midi_file(file_path)
         test_score = [(80, 120),(82, 120),(200, 240),(80, 120),(90, 120),(83, 120)]
         self.assertEqual(test_score, score)
     
@@ -39,8 +39,8 @@ class TestMidiService(unittest.TestCase):
         original_score = [(80, 120),(82, 120),(200, 120),(200, 120),(80, 120),(90, 120),(200, 120),(83, 120)]
         file_name = "tests/two_rests"
         midi_service2.save_generated_song(original_score, 120, file_name)
-        file_path = f"src\\data\\{file_name}.mid"
-        score = midi_service2._read_midi_file(file_path)
+        file_path = f"src\\data\\{file_name}{0}.mid"
+        score = midi_service2.read_midi_file(file_path)
         test_score = [(80, 120),(82, 120),(200, 240),(80, 120),(90, 120),(200, 120),(83, 120)]
         self.assertEqual(test_score, score)
 
