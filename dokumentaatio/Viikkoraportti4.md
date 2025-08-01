@@ -18,7 +18,7 @@
 -midi_player-luokan testaus on ollut hankalaa ja olen tässä opetellut mock-kirjaston käyttöä, missä tosin vielä hahmotettavaa
 
 ## Käytetty tuntimäärä
-- 17
+- 18
 
 ## Mitä teen seuraavaksi?
 - testausta
