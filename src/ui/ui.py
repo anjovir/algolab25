@@ -1,5 +1,4 @@
-from ui.midi_app import MidiApp
-
+from ui.song_generator import SongGenerator
 
 class UI:
     def __init__(self, root):
@@ -21,7 +20,7 @@ class UI:
     def _show_midi_app(self):
         self._hide_current_view()
 
-        self._current_view = MidiApp(
+        self._current_view = SongGenerator(
             self._root
         )
 
