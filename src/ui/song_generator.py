@@ -12,7 +12,7 @@ class SongGenerator:
         self._player = MidiSongPlayer(None)
         self._trie_service = TrieService()
         self._midi_service = MidiService()
-        self._file_path = "src\data\Super Mario Bross (Theme Song) - melody.mid"
+        self._file_path = None
 
         self._frame1 = None
         self._frame2 = None
@@ -54,8 +54,6 @@ class SongGenerator:
         self.reset_trie_button = tk.Button(
             master=self._frame1, text="Reset trie", command=self.reset_trie)
         self.reset_trie_button.grid(row=1, column=2, padx=5, pady=5)
-
-        
 
     def _initialize_footer(self):
         self.status = tk.Label(master=self._frame3, text="",
@@ -123,6 +121,16 @@ class SongGenerator:
 
     def reset_trie(self):
         self._trie_service = TrieService()
+        self.play_button.config(command=self._player.start_playing)
+        self.stop_button.config(command=self._player.stop_playing)
+        self.trie_button.config(command=self.read_file_to_trie)
+        self.starting_sequence_button.config(
+            command=self.generate_and_print_starting_sequence)
+        self.generate_song_button.config(
+            command=self.generate_and_print_song_notes)
+        self.status.config(text="Trie reset")
+        self.starting_seq.config(text="")
+        self.song_notes.config(text="")
 
     def play(self):
         self._player.start_playing()
@@ -162,9 +170,9 @@ class SongGenerator:
             self._file_path, self.mc_order_trie_slider.get())
         if self._trie_service._trie_read_succesfully:
             self.status.config(
-                text="Tiedosto ladattu onnistuneesti trie-rakenteeseen.")
+                text="File loaded successfully to trie")
         else:
-            self.status.config(text="Tiedoston lataus epäonnistui.")
+            self.status.config(text="Loading failed")
 
     def _open_midi_file(self):
         file = filedialog.askopenfilename(filetypes=[("Midi files", "*.mid")])

@@ -17,10 +17,10 @@
 - nyt tehty metodi, jossa nuotit ja niiden kestot tallennetaan samaan trie-rakenteeseen tuottaa parempia tuloksia, vaikkakaan melodiat eivät noudata tahtien kestoja.
 
 ## Käytetty tuntimäärä
-- 11,5
+- 13,5
 
 ## Mitä teen seuraavaksi?
 - testausta
 - metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta.
 - käyttöliittymän hiomista
-- generoituja nuottiketjuja voisi hioa siten, että se noudattaisi selkeämmin jotain tahtilajia
+- generoituja nuottiketjuja voisi hioa siten, että se noudattaisi selkeämmin jotain tahtilajia - mikäli ehdin
