@@ -1,0 +1,32 @@
+# Toteutusraportti
+
+## Ohjelman rakenne
+Sovelluksessa pointtina on ollut rakentaa Markovin ketjuja hyödyntävä musiikin generointityökalu syötedatan pohjalta. Syötteeksi annetaan siis midi-muodossa melodioita ja tämän pohjalta generoidaan Markovin ketjun asteen mukaisesti nuotteja haluttu määrä. Markovin ketjun astetta voidaan säätää ennen musiikin generoimista. Markovin ketjuissa on kyse siitä, että tietorakenteeseen on tallennettu nuotit esim. 5-nuotin ketjuina sen mukaan, mikä nuotti seuraa toista, esim. (76, 120), (76, 120), (76, 120), (72, 120), (76, 120). Tästä jos valitaan 2-nuotin aloitussegmentti (76, 120), (76,120) ja lähdetään generoimaan seuraavaa nuottia, niin vaihtoehdot ovat joko (76, 120) tai (72, 120). Kun seuraava nuotti on haettu, lähdetään generoimaan taas viimeisimmän kahden nuotin perusteella seuraavaa nuottia, kunnes haluttu määrä nuotteja saavutettu.
+
+Itse nuotit ja niiden kestot ovat tallennettu trie-rakenteeseen, joka soveltuu tähän tarkoitukseen hyvin. Kyse on puurakenteesta, jota lähdetään syventämään. Perinteisenä esimerkkinä tästä käytetään aakkosia ja sanoja, jossa juuren lapsina on ensimmäisellä tasolla esim. kaikki kirjaimet [a...ö] ja seuraavalla tasolla taas kaikki kirjaimet [a...ö], joista lähtee haarautumaan sanoja riippuen siitä, kuinka paljon yhteisiä kirjaimia niillä on (esim. kissa, kismet).
+
+Trie-rakenne soveltuu kuitenkin myös tähän käyttämääni sovellukseen, jossa kirjaimet korvataan tuplella (nuotin midi-arvo, nuotin kesto muunnettuna pulsseiksi per lyönti) ja näistä syntyy ketjuja, jotka tallennetaan trie-rakenteen solmuiksi sanakirjana. Sekvenssit tallennetaan trie-rakenteeseen halutun pituisiksi perustuen haluttuun Markovin ketjun asteeseen (esim. 10-asteinen Markovin ketju vastaa 10-merkkistä sanaa) ja jokaiseen solmuun tallennetaan tuple sekä siihen liittyvä frekvenssi, jolloin voimme lähteä generoimaan eri tasoisia Markovin ketjuja kuitenkaan ylittämättä alkuperäisen tallennusoperatiovaiheeseen määritettyä astetta (sanan pituutta).
+
+Tämä muodostaa sovelluksen ytimen, johon voimme sitten lähteä erilaisia parametreja rakentamaan lisää, jotta saamme ulos kiinnostavampaa tulosta Markovin ketjuja hyödyntäen.
+
+## Aikavaativuus ja suorituskyky
+Aikavaativuus trie-rakenteeseen tallentamisessa on O(m)*O(n), jossa m on nuottien määrä ja n on aste tai sekvenssin pituus, joka halutaan trie rakenteeseen tallentaa (jos pituus 10-astetta, tallennamme jokaisesta nuotista lähtien aina 10-elementtisen sekvenssin rakenteeseen). Esim. jos kappaleen pituus on 1000 nuottia ja tallennamme tämän 10 asteiseksi, aikavaativuus kasvaa kymmenkertaiseksi jne. Aikavaativuus kasvaa siis lineaarisesti riippuen näistä muuttujista.
+
+Lisäksi täytyy ottaa huomioon se, että koska kyseessä on tuple, niin eri tupleja syntyy periaatteessa midinuottivaihtoehtojen määrä 0-127 + numero 200, jota käytän tauon merkkinä. Lisäksi rytmivaihtoehtoja voi tulla vaihdellen perustuen midi-tiedostossa käytettyyn pulsseja per minuutti -arvoon (ticks per beat), jonka moninkertojen mukaan nuotin kesto tulee. Yleisin käytetty arvo on 480, joka mittaa neljännesosanuotin kestoa ja tästä voi lähteä hahmottelemaan perusnuottien kestoja (esim. 120, 240, 480, 960, 1920) jne. Erilaisten tuplevaihtoehtojen määrä riippuu näistä, mutta lienee käytännössä kyse enintään tuhansista.
+
+Itse lukemisen kesto trie-rakenteesta kestää sen verran, kuinka paljon tupleja on solmuihin tallennettu ja toimii logiikalla O(m)*O(n), sillä se perustuu puhtaasti rakenteeseen tallennettujen nuottien määrään ja Markovin ketjun asteeseen, kuinka pitkiä sekvenssejä nuoteista on rakenteeseen tallennettu. Lisäksi täytyy huomata, että sekvenssit toistuvat, joten esim. jos kappaleessa on 1000 nuottia, niin tässä on paljon toistoa, mikä näkyy eri mittaisten sekvenssien ja nuottien frekvenssien kasvuna, jolloin itse solmujen määrä on pienempi kuin O(m)*O(n) huonoimmassa tapauksessa antaisi olettaa.
+
+## Käytettävyys
+Sovellusta käytetään tkinter-pohjaisen käyttöliittymän avulla. Sen avulla voidaan valita, mitä midi-tiedostoja luetaan trie-rakenteeseen, jonka jälkeen valitaan satunnainen halutun mittainen syötedataan sisältyvä aloitussekvenssi ja tämän jälkeen generoidaan itse halutun mittainen nuottisekvenssi aloitussekvenssin pohjalta. Tästä tallennetaan miditiedosto sovelluksen data-kansioon, jonka jälkeen midi-tiedoston voi lukea haluamallaan kolmannen osapuolen sovelluksella tai sen voi soittaa ohjelman midi-soittimella.
+
+## Puutteet ja parannusehdotukset
+Tällä hetkellä sovellus generoi lähinnä nuotteja ja niiden kestoja perustuen Markovin ketjuun, mutta näistä ei saa johdonmukaista kappaletta tehtyä. Kyse on enemmän vapaamuotoisesta nuottiassosiaatiosta, joka ei välitä esim. tahtilajien kestosta.
+
+Myöskään kappaleen tempovaihteluita ei ole otettu huomioon nuottisekvenssien generoimisessa.
+
+Lisäksi syötetiedoston täytyy tässä kohtaa olla manuaalisesti esikäsitelty siten, että se sisältää vain yksinuottisia melodioita yhdellä midi-kanavalla. Useampikanavisten miditiedostojen ja sointujen käsittely voi johtaa sekaviin lopputulemiin eikä tätä ole mallinnettu järkevästi sekvenssien tallentamisessa ja nuottien generoimisessa.
+
+Näiden ratkaisemisen jälkeen kyseiset toiminnallisuudet tulisi rakentaa myös käyttöliittymään, jonka kautta tulisi voida myös syöttää erilaisia näihin vaikuttavia parametrejä.
+
+## Laajojen kielimallien käyttö
+Kielilmallia GPT-4o mini on käytetty koodamisen tukena tyyliin "Miten tämän metodin voisi rakentaa", "Mikä tässä on virheenä" tai "Mitä tämä tarkoittaa, miten tämä toimii?" jne. Näitä GPT:n tuottamia ehdotuksia olen lähtenyt sitten jatkotyöstämään valmiiksi. GPT on toiminut parhaiten uuteen kirjastoon tutustumisvaiheessa tai muistiin palauttamisessa (esim. mido, tkinter, pygame), kun kirjaston käyttö on ollut itselle aiemmin tuntematon ja näillä prompteilla pääsee siinä liikkeelle. Toisaalta GPT-malli tuottaa paljon virheitä vähänkään monimutkaisemmissa asioissa, joten sen tuottama aikahyöty näkyy erityisesti täsmällisempien yksityiskohtiin keskittyvien vastausten saamisena kuin että kävisi samat lukemassa google-hakujen tuloksena Stack overflowsta tai ko. python-kirjaston omasta dokumentaatiosta (ilman näitä ei kuitenkaan pärjää).

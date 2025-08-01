@@ -17,7 +17,7 @@
 - nyt tehty metodi, jossa nuotit ja niiden kestot tallennetaan samaan trie-rakenteeseen tuottaa parempia tuloksia, vaikkakaan melodiat eivät noudata tahtien kestoja.
 
 ## Käytetty tuntimäärä
-- 9
+- 11,5
 
 ## Mitä teen seuraavaksi?
 - testausta
