@@ -15,9 +15,10 @@
 ## Mikä jäi epäselväksi tai tuottanut vaikeuksia?
 - testannut eri tapoja sisällyttää rytmi sekvenssiin. Alkuperäinen tapa, jossa nuottisekvenssit ja rytmit generoitiin erikseen (jälkimmäinen perustuen kokonaisiin tahteihin ja miten ne seuraavat toisiaan) ei toiminut ja tulos ei tyydyttänyt
 - nyt tehty metodi, jossa nuotit ja niiden kestot tallennetaan samaan trie-rakenteeseen tuottaa parempia tuloksia, vaikkakaan melodiat eivät noudata tahtien kestoja.
+-midi_player-luokan testaus on ollut hankalaa ja olen tässä opetellut mock-kirjaston käyttöä, missä tosin vielä hahmotettavaa
 
 ## Käytetty tuntimäärä
-- 13,5
+- 17
 
 ## Mitä teen seuraavaksi?
 - testausta

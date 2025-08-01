@@ -92,8 +92,8 @@ class SongGenerator:
         self.set_tempo_slider.grid(row=3, column=0)
 
         self.choose_song_lenght_slider = tk.Scale(
-            master=self._frame2, from_=1, to=200, orient=tk.HORIZONTAL, label="Choose the lenght of the song")
-        self.choose_song_lenght_slider.set(30)
+            master=self._frame2, from_=1, to=300, orient=tk.HORIZONTAL, label="Song length")
+        self.choose_song_lenght_slider.set(100)
         self.choose_song_lenght_slider.grid(row=3, column=1)
 
         self.starting_sequence_button = tk.Button(
@@ -114,10 +114,10 @@ class SongGenerator:
     
     def _initialize_print_window(self):
         self.starting_seq = tk.Label(master=self._frame5, text="")
-        self.starting_seq.grid(row=7, column=0)
+        self.starting_seq.grid(row=0, column=0)
 
         self.song_notes = tk.Label(master=self._frame5, text="")
-        self.song_notes.grid(row=8, column=0)
+        self.song_notes.grid(row=1, column=0)
 
     def reset_trie(self):
         self._trie_service = TrieService()

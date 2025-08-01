@@ -1,5 +1,4 @@
 from threading import Thread
-import pygame
 import pygame.midi
 import mido
 
@@ -7,6 +6,7 @@ import mido
 class MidiSongPlayer:
     def __init__(self, file_path):
         self.file_path = file_path
+        self.midi_file = mido.MidiFile(self.file_path)
         self.is_playing = False
         self.thread = None
 
@@ -17,25 +17,20 @@ class MidiSongPlayer:
         return self.file_path
 
     def play(self):
-        pygame.init()
         pygame.midi.init()
         player = pygame.midi.Output(0)
 
-        mid = mido.MidiFile(self.file_path)
-
         self.is_playing = True
-        for msg in mid.play():
+        for msg in self.midi_file.play():
             if not self.is_playing:
-                break  # Stop playing
-            if not msg.is_meta:
-                if msg.type == 'note_on':
-                    player.note_on(msg.note, msg.velocity)
-                elif msg.type == 'note_off':
-                    player.note_off(msg.note, msg.velocity)
+                break
+            if msg.type == 'note_on':
+                player.note_on(msg.note, msg.velocity)
+            elif msg.type == 'note_off':
+                player.note_off(msg.note, msg.velocity)
 
         player.close()
         pygame.midi.quit()
-        pygame.quit()
 
     def start_playing(self):
         if not self.is_playing and self.file_path is not None:
