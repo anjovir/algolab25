@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import font, ttk, constants, filedialog, messagebox
 from services.midi_player import MidiSongPlayer
-from entities.trie import Trie
 from services.trie_service import TrieService
 from services.midi_service import MidiService
 
@@ -13,6 +12,8 @@ class SongGenerator:
         self._trie_service = TrieService()
         self._midi_service = MidiService()
         self._file_path = None
+        self.option_var = tk.IntVar()
+        self.first_bar_length = 1920
 
         self._frame1 = None
         self._frame2 = None
@@ -47,13 +48,31 @@ class SongGenerator:
             master=self._frame1, text="Open midi file", command=self._open_midi_file)
         self.open_file_button.grid(row=1, column=0, padx=5, pady=5)
 
-        self.trie_button = tk.Button(
-            master=self._frame1, text="Read midi-file to trie", command=self.read_file_to_trie)
-        self.trie_button.grid(row=1, column=1, padx=5, pady=5)
+        self.read_to_trie_button = tk.Button(
+            master=self._frame1, text="Read file", command=self.read_file_to_trie)
+        self.read_to_trie_button.grid(row=1, column=1, padx=5, pady=5)
 
         self.reset_trie_button = tk.Button(
             master=self._frame1, text="Reset trie", command=self.reset_trie)
         self.reset_trie_button.grid(row=1, column=2, padx=5, pady=5)
+
+        self.generator_option1_button = tk.Radiobutton(master=self._frame1,
+                                                      text="Notes and rhythm considered as an unit",
+                                                      variable=self.option_var, 
+                                                      value=1
+        )
+
+        self.generator_option1_button.grid(row=2, column=0, padx=0, pady=2)
+        
+        self.generator_option2_button = tk.Radiobutton(master=self._frame1,
+                                                      text="Notes and rhythm generated separately",
+                                                      variable=self.option_var, 
+                                                      value=2
+        )
+
+        self.generator_option2_button.grid(row=2, column=2, padx=0, pady=2)
+        
+       
 
     def _initialize_footer(self):
         self.status = tk.Label(master=self._frame3, text="",
@@ -92,8 +111,8 @@ class SongGenerator:
         self.set_tempo_slider.grid(row=3, column=0)
 
         self.choose_song_lenght_slider = tk.Scale(
-            master=self._frame2, from_=1, to=300, orient=tk.HORIZONTAL, label="Song length")
-        self.choose_song_lenght_slider.set(100)
+            master=self._frame2, from_=1, to=50, orient=tk.HORIZONTAL, label="Song length")
+        self.choose_song_lenght_slider.set(10)
         self.choose_song_lenght_slider.grid(row=3, column=1)
 
         self.starting_sequence_button = tk.Button(
@@ -123,7 +142,7 @@ class SongGenerator:
         self._trie_service = TrieService()
         self.play_button.config(command=self._player.start_playing)
         self.stop_button.config(command=self._player.stop_playing)
-        self.trie_button.config(command=self.read_file_to_trie)
+        self.read_to_trie_button.config(command=self.read_file_to_trie)
         self.starting_sequence_button.config(
             command=self.generate_and_print_starting_sequence)
         self.generate_song_button.config(
@@ -145,25 +164,33 @@ class SongGenerator:
 
     def generate_starting_sequence(self):
         self._starting_sequence = self._trie_service.generate_random_sequence_from_data(
-            self.mc_order_song_slider.get())
+            self.mc_order_song_slider.get(), self.option_var.get())
+        if self.option_var.get() == 2:
+            self.first_bar_length = self._starting_sequence[2]
 
     def print_starting_sequence(self):
-        sequence = str(self._starting_sequence)
-        self.starting_seq.config(text=sequence, wraplength=500)
+        if self.option_var.get() == 2:
+            notes = f"NOTES: {self._starting_sequence[0]}"
+            rhythm = f"RHYTHM: {self._starting_sequence[1]}"
+            sequence = f"STARTING SEQUENCE\n{notes}\n{rhythm}"
+        else:
+            sequence = f"STARTING SEQUENCE\n{self._starting_sequence}"
+        
+        self.starting_seq.config(text=str(sequence), wraplength=500)
 
     def generate_and_print_song_notes(self):
         self.generate_song_notes()
         self.print_song_notes()
 
     def generate_song_notes(self):
-        self._song_notes = self._trie_service.generate_song(
-            self._starting_sequence, self.choose_song_lenght_slider.get())
+        self._song_score = self._trie_service.generate_score(
+            self._starting_sequence, self.choose_song_lenght_slider.get(), self.option_var.get())
         self._midi_service.save_generated_song(
-            self._song_notes, tempo=self.set_tempo_slider.get())
+            self._song_score, tempo=self.set_tempo_slider.get(), first_bar_lenght=self.first_bar_length)
 
     def print_song_notes(self):
-        sequence = str(self._song_notes)
-        self.song_notes.config(text=sequence, wraplength=500)
+        sequence = f"FULL SCORE:\n{str(self._song_score)}"
+        self.song_notes.config(text=sequence, wraplength=700)
 
     def read_file_to_trie(self):
         self._trie_service._read_file(
@@ -182,7 +209,7 @@ class SongGenerator:
 
             self.play_button.config(command=self._player.start_playing)
             self.stop_button.config(command=self._player.stop_playing)
-            self.trie_button.config(command=self.read_file_to_trie)
+            self.read_to_trie_button.config(command=self.read_file_to_trie)
             self.starting_sequence_button.config(
                 command=self.generate_and_print_starting_sequence)
             self.generate_song_button.config(

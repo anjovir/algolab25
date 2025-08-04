@@ -6,39 +6,80 @@ class TrieService:
     def __init__(self, order=10):
         self.root = TrieNode()
         self.trie = Trie(self.root)
+        self.root_notes = TrieNode()
+        self.trie_notes = Trie(self.root_notes)
+        self.root_rhythm = TrieNode()
+        self.trie_rhythm = Trie(self.root_rhythm)
         self._mc_order = order
         self._trie_read_succesfully = False
         self._midi_service = MidiService()
 
     def _read_file(self, file_path, mc_order):
-        all_notes = self._midi_service.read_midi_file(file_path)
-        self._trie_read_succesfully = self._insert_to_trie(all_notes, mc_order)
-
-    def _insert_to_trie(self, notes, mc_order):
-        self.trie.insert(notes, mc_order)
+        score = self._midi_service.read_midi_file(file_path)
+        self._trie_read_succesfully = self._insert_to_trie(score, mc_order)
+    
+    def _insert_to_trie(self, score, mc_order):
+        full_score_ok = False
+        score_notes_ok = False
+        self.trie.insert(score[2], mc_order)
         for node in self.root.children.values():
             if isinstance(node[0], TrieNode):
-                return True
+                full_score_ok = True
+    
+        self.trie_notes.insert(score[0])
+        for node in self.root_notes.children.values():
+            if isinstance(node[0], TrieNode):
+                score_notes_ok = True
+                         
+        self.trie_rhythm.insert(score[1])
+        if full_score_ok and score_notes_ok:
+            for node in self.root_rhythm.children.values():
+                if isinstance(node[0], TrieNode):                
+                    return True      
         return False
 
-    def generate_random_sequence_from_data(self, order=3):
-        seqs = self.trie.get_unique_sequences(order)
-        return seqs[random.randint(0, (len(seqs) - 1))]
-
-    def generate_song(self, sequence, length):
+    def generate_random_sequence_from_data(self, order=3, option=1):
+        if option == 1:
+            seqs = self.trie.get_unique_sequences(order)
+            return seqs[random.randint(0, (len(seqs) - 1))]
+        elif option == 2:
+            rhythm_seqs = self.trie_rhythm.get_unique_sequences(1)
+          
+            first_bar_rhythm_length = sum(rhythm_seqs[0][0])
+            rhythm_seq = rhythm_seqs[random.randint(0, (len(rhythm_seqs) - 1))]
+            note_seqs = self.trie_notes.get_unique_sequences(order)
+            note_seq = note_seqs[random.randint(0, (len(note_seqs) - 1))]
+            return (note_seq, rhythm_seq, first_bar_rhythm_length)
+    
+    def generate_score(self, sequence, lenght, option=1):
+        if option == 1:
+            return self.generate_song(sequence, lenght, 1)
+        elif option == 2:
+            rhythm_score = self.generate_song(sequence[1], lenght, 2)
+            rhythm_score = [note for bar in rhythm_score for note in bar]
+            quantum_of_notes = len(rhythm_score)
+            note_score = self.generate_song(sequence[0], quantum_of_notes, 3)  
+        return list(zip(note_score, rhythm_score))        
+            
+    def generate_song(self, sequence, length, option):
         length = length - len(sequence)
         markov_chain_song = []
         for s in sequence:
             markov_chain_song.append(s)
         while_counter = 0
         for i in range(length):
-            generated_note = self.trie.get_next_note(sequence)
+            if option == 1: generated_note = self.trie.get_next_note(sequence)
+            elif option == 2: generated_note = self.trie_rhythm.get_next_note(sequence)
+            elif option == 3: generated_note = self.trie_notes.get_next_note(sequence)
+
             # Sometimes there is no next element (note) for the sequence, this is a workaround
             while not generated_note:
                 while_counter += 1
                 sequence = self.generate_random_sequence_from_data(
                     len(sequence))
-                generated_note = self.trie.get_next_note(sequence)
+                if option == 1: generated_note = self.trie.get_next_note(sequence)
+                elif option == 2: generated_note = self.trie_rhythm.get_next_note(sequence)
+                elif option == 3: generated_note = self.trie_notes.get_next_note(sequence)
                 if while_counter > 100:
                     return False
             markov_chain_song.append(generated_note)
@@ -46,3 +87,5 @@ class TrieService:
             sequence.append(generated_note)
 
         return markov_chain_song
+    
+  

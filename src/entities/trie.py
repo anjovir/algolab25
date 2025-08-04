@@ -25,6 +25,21 @@ class Trie:
 
                 curr_node.children[index][1] += 1
                 curr_node = curr_node.children[index][0]
+    
+    def insert_rhythm(self, score, max_order=100):
+        curr_node = self.root
+
+        for n in range(len(score)):
+            curr_node = self.root
+            for i in range(max_order):
+                if n + i >= len(score):
+                    break
+                index = score[n+i]
+                if index not in curr_node.children or curr_node.children[index] is None:
+                    curr_node.children[index] = [TrieNode(), 1]
+
+                curr_node.children[index][1] += 1
+                curr_node = curr_node.children[index][0]
 
     def get_unique_sequences(self, order=3):
         seqs = []

@@ -7,7 +7,8 @@ class TestTrie(unittest.TestCase):
     def setUp(self):
         self.trie_service = TrieService()
         self._file_path = "src/data/super_mario_play_test.mid"
-        self.trie_service._read_file(self._file_path, 4)
+        self.order = 4
+        self.trie_service._read_file(self._file_path, self.order)
 
     def test_constructor_root_node(self):
         self.assertIsInstance(self.trie_service.root, TrieNode)
@@ -29,7 +30,7 @@ class TestTrie(unittest.TestCase):
 
     def test_generate_song(self):
         seq = self.trie_service.generate_random_sequence_from_data(1)
-        song = self.trie_service.generate_song(seq, 10)
+        song = self.trie_service.generate_song(seq, 10,1)
         notes = [(76,120), (76,120), (200,120), (76,120),(200,120),(72,120),(76,120),(200,120),(79,120)]
         self.assertTrue(note in notes for note in song)
     
