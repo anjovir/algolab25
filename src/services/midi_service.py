@@ -30,7 +30,7 @@ class MidiService:
         note_score = []
         rhythm_score = []
         full_score = []
-        bar = []
+        measure = []
         skip_first_track = True
         ts_note_flag = False
         messages = {}
@@ -44,7 +44,8 @@ class MidiService:
                 messages[msg_counter] = msg
                 note_or_rest = False
                 if msg.type == "note_on":
-                    if messages[msg_counter-1].type == "time_signature" and messages[msg_counter-1].time != 0:
+                    if (messages[msg_counter-1].type == "time_signature" and 
+                        messages[msg_counter-1].time != 0):
                         duration = messages[msg_counter-1].time
                         bar_lenght = tpb * \
                             time_signatures[ts_counter - 1][0] * \
@@ -85,20 +86,20 @@ class MidiService:
                     full_score.append((note, duration))
 
                     if duration + bar_counter < bar_lenght:
-                        bar.append(duration)
+                        measure.append(duration)
                         bar_counter += duration
                     elif duration + bar_counter == bar_lenght:
-                        bar.append(duration)
-                        rhythm_score.append(tuple(bar))
-                        bar = []
+                        measure.append(duration)
+                        rhythm_score.append(tuple(measure))
+                        measure = []
                         bar_counter = 0
                     elif duration + bar_counter > bar_lenght:
                         left_over = bar_lenght-bar_counter
-                        bar.append(left_over)
-                        rhythm_score.append(tuple(bar))
-                        bar = []
+                        measure.append(left_over)
+                        rhythm_score.append(tuple(measure))
+                        measure = []
                         duration_to_next_bar = duration-left_over
-                        bar.append(duration_to_next_bar)
+                        measure.append(duration_to_next_bar)
                         bar_counter = duration_to_next_bar
 
                 # In the first track there is no note-data
@@ -108,8 +109,8 @@ class MidiService:
                     if duration + bar_counter < bar_lenght:  # last note and bar not complete
                         note_score.append(200)
                         full_score.append((200, bar_lenght-bar_counter))
-                        bar.append(bar_lenght-bar_counter)
-                        rhythm_score.append(tuple(bar))
+                        measure.append(bar_lenght-bar_counter)
+                        rhythm_score.append(tuple(measure))
 
                 if ts_note_flag:
                     ts_note_flag = False
@@ -131,7 +132,7 @@ class MidiService:
         """
 
         tpb = 480 # default ticks per beat
-        ts_numerator = (first_bar_lenght // tpb)
+        ts_numerator = first_bar_lenght // tpb
         ts_denominator = 4
 
         # Create new file

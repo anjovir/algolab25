@@ -88,9 +88,9 @@ class TrieService:
         if option == 1:
             seqs = self.trie.get_unique_sequences(order)
             return seqs[random.randint(0, (len(seqs) - 1))]
-        elif option == 2:
+        if option == 2:
             rhythm_seqs = self.trie_rhythm.get_unique_sequences(1)
-            first_bar_rhythm_length = sum(rhythm_seqs[0][0]) # for writing the generated song to a midi-file
+            first_bar_rhythm_length = sum(rhythm_seqs[0][0]) # for the midi-file save method
             rhythm_seq = rhythm_seqs[random.randint(0, (len(rhythm_seqs) - 1))]
             note_seqs = self.trie_notes.get_unique_sequences(order)
             note_seq = note_seqs[random.randint(0, (len(note_seqs) - 1))]
@@ -111,7 +111,7 @@ class TrieService:
         """
         if option == 1:
             return self.generate_song(sequence, lenght, 1)
-        elif option == 2:
+        if option == 2:
             rhythm_score = self.generate_song(sequence[1], lenght, 2)
             rhythm_score = [note for bar in rhythm_score for note in bar]
             quantum_of_notes = len(rhythm_score)
