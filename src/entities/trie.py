@@ -2,6 +2,9 @@ import random
 
 
 class TrieNode:
+    """
+    Class for Trie-node
+    """
     def __init__(self):
         self.children = {}
 
@@ -10,10 +13,20 @@ class TrieNode:
 
 
 class Trie:
+    """
+    Class for methods using TrieNode
+    """
     def __init__(self, root_node):
         self.root = root_node
 
     def insert(self, score, max_order=100):
+        """
+        Inserts data to Trie Node
+
+        Args:
+            score (list)
+            max_order (int), maximum Markov chain order used in saving notes to Trie
+        """
         curr_node = self.root
 
         for n in range(len(score)):
@@ -29,11 +42,30 @@ class Trie:
                 curr_node = curr_node.children[index][0]
 
     def get_unique_sequences(self, order=3):
+        """
+        Method for handling _collect_sequences
+
+        Args:
+            order (int)
+
+        Returns:
+            seqs (list)
+                All sequences saved in the Trie-entity
+        """
         seqs = []
         self._collect_sequences(self.root, seqs, order, seq=[])
         return seqs
 
     def _collect_sequences(self, node, seqs, order, seq):
+        """
+        Collects all sequences from the trie recursively and saves them to seqs
+
+        Args:
+            node (TrieNode)
+            seqs (list)
+            order (int)
+            seq (list)
+        """
         for n in node.children:
             if node.children[n][1] > 0:
                 if len(seq) < order:
@@ -45,6 +77,16 @@ class Trie:
                 seq = []
 
     def get_next_note(self, sequence):
+        """
+        Checks the TrieNode for the next to based on input sequence
+
+        Args:
+            sequence(list)
+        
+        Returns:
+            next_element, output varies based on used trie-node
+                can be tuple, list or int
+        """
         curr_node = self.root
         for element in sequence:
             if curr_node.children[element][0] is None:
