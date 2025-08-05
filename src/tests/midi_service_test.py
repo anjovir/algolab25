@@ -9,7 +9,7 @@ class TestMidiService(unittest.TestCase):
         self.test_dir = "src/data/tests"
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
-    
+
     def tearDown(self):
         for file in os.listdir(self.test_dir):
             if file.endswith(".mid"):
@@ -26,22 +26,24 @@ class TestMidiService(unittest.TestCase):
 
     def test_save_last_note(self):
         midi_service1 = MidiService()
-        original_score = [(80, 120),(82, 120),(200, 120),(200, 120),(80, 120),(90, 120),(83, 120),(200, 120)]
+        original_score = [(80, 120), (82, 120), (200, 120),
+                          (200, 120), (80, 120), (90, 120), (83, 120), (200, 120)]
         file_name = "tests/last_note"
         midi_service1.save_generated_song(original_score, 120, file_name, 1920)
         file_path = f"src\\data\\{file_name}{0}.mid"
         score = midi_service1.read_midi_file(file_path)
-        test_score = [(80, 120),(82, 120),(200, 240),(80, 120),(90, 120),(83, 120)]
+        test_score = [(80, 120), (82, 120), (200, 240),
+                      (80, 120), (90, 120), (83, 120)]
         self.assertEqual(test_score, score[2])
-    
+
     def test_save_two_rest_notes_after_another(self):
         midi_service2 = MidiService()
-        original_score = [(80, 120),(82, 120),(200, 120),(200, 120),(80, 120),(90, 120),(200, 120),(83, 120)]
+        original_score = [(80, 120), (82, 120), (200, 120),
+                          (200, 120), (80, 120), (90, 120), (200, 120), (83, 120)]
         file_name = "tests/two_rests"
         midi_service2.save_generated_song(original_score, 120, file_name)
         file_path = f"src\\data\\{file_name}{0}.mid"
         score = midi_service2.read_midi_file(file_path)
-        test_score = [(80, 120),(82, 120),(200, 240),(80, 120),(90, 120),(200, 120),(83, 120)]
+        test_score = [(80, 120), (82, 120), (200, 240),
+                      (80, 120), (90, 120), (200, 120), (83, 120)]
         self.assertEqual(test_score, score[2])
-
-

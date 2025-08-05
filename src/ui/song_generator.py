@@ -31,7 +31,7 @@ class SongGenerator:
         self._frame2.pack(fill=constants.X)
         self._frame5.pack(fill=constants.X)
         self._frame3.pack(fill=constants.X)
-       
+
     def destroy(self):
         self._frame1.destroy()
         self._frame2.destroy()
@@ -57,31 +57,29 @@ class SongGenerator:
         self.reset_trie_button.grid(row=1, column=2, padx=5, pady=5)
 
         self.generator_option1_button = tk.Radiobutton(master=self._frame1,
-                                                      text="Notes and rhythm considered as an unit",
-                                                      variable=self.option_var, 
-                                                      value=1
-        )
+                                                       text="Notes and rhythm considered as an unit",
+                                                       variable=self.option_var,
+                                                       value=1
+                                                       )
 
         self.generator_option1_button.grid(row=2, column=0, padx=0, pady=2)
-        
+
         self.generator_option2_button = tk.Radiobutton(master=self._frame1,
-                                                      text="Notes and rhythm generated separately",
-                                                      variable=self.option_var, 
-                                                      value=2
-        )
+                                                       text="Notes and rhythm generated separately",
+                                                       variable=self.option_var,
+                                                       value=2
+                                                       )
 
         self.generator_option2_button.grid(row=2, column=2, padx=0, pady=2)
-        
-       
 
     def _initialize_footer(self):
         self.status = tk.Label(master=self._frame3, text="",
                                bd=1, relief=tk.SUNKEN, anchor=tk.W)
         self.status.pack(side=tk.BOTTOM, fill=tk.X)
-    
+
     def _initialize_main_parameters(self):
-        self.trie_slider_label = tk.Label(master=self._frame2, 
-                                          text="Choose markovian chain order used when loading the data to trie", 
+        self.trie_slider_label = tk.Label(master=self._frame2,
+                                          text="Choose markovian chain order used when loading the data to trie",
                                           wraplength="100")
         self.trie_slider_label.grid(row=1, column=0)
 
@@ -130,7 +128,7 @@ class SongGenerator:
         self.stop_button = tk.Button(
             master=self._frame2, text="Stop", command=self._player.stop_playing)
         self.stop_button.grid(row=5, column=1, padx=5, pady=5)
-    
+
     def _initialize_print_window(self):
         self.starting_seq = tk.Label(master=self._frame5, text="")
         self.starting_seq.grid(row=0, column=0)
@@ -175,7 +173,7 @@ class SongGenerator:
             sequence = f"STARTING SEQUENCE\n{notes}\n{rhythm}"
         else:
             sequence = f"STARTING SEQUENCE\n{self._starting_sequence}"
-        
+
         self.starting_seq.config(text=str(sequence), wraplength=500)
 
     def generate_and_print_song_notes(self):
@@ -232,4 +230,3 @@ class SongGenerator:
         self._initialize_main_parameters()
         self._initialize_footer()
         self._initialize_print_window()
-        

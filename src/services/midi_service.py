@@ -1,13 +1,27 @@
 import mido
 
+
 class MidiService:
     def __init__(self):
         self._midi_file = None
         self._midi_song_number = 0
         self.time_signatures = None
-    
+
     def read_midi_file(self, file_path):
-        # This method reads the midi-file and packets the rhythms to a bar based rhythms
+        """
+        Method reads the midi-file and returns tuple with lists with notes, rhythm and both
+
+        Args:
+            file_path (str)
+        
+        Returns:
+            Score (tuple)
+                inside the tuple there are three lists
+                1: only notes and their midi-values
+                2: only full bar rhythm-patterns
+                3: notes and their durations in one tuple in a list
+        """
+
         self._midi_file = mido.MidiFile(file_path)
         tpb = self._midi_file.ticks_per_beat
 
@@ -15,6 +29,7 @@ class MidiService:
         bpms = []
         note_score = []
         rhythm_score = []
+        full_score = []
         bar = []
         skip_first_track = True
         ts_note_flag = False
@@ -22,8 +37,6 @@ class MidiService:
         msg_counter = 0
         ts_counter = -1
         bar_counter = 0
-
-        full_score = []
 
         for track in self._midi_file.tracks:
             for msg in track:
@@ -38,11 +51,11 @@ class MidiService:
                             (4 // time_signatures[ts_counter - 1][1])
                         note_or_rest = True
                         ts_note_flag = True
-                        note = 200 # rest
+                        note = 200  # rest
                     if msg.time > 0:
                         duration = msg.time
                         note_or_rest = True
-                        note = 200 # rest
+                        note = 200  # rest
 
                     pitchwheel_duration = 0
 
@@ -81,7 +94,7 @@ class MidiService:
                         bar_counter = 0
                     elif duration + bar_counter > bar_lenght:
                         left_over = bar_lenght-bar_counter
-                        bar.append( left_over)
+                        bar.append(left_over)
                         rhythm_score.append(tuple(bar))
                         bar = []
                         duration_to_next_bar = duration-left_over
@@ -91,9 +104,10 @@ class MidiService:
                 # In the first track there is no note-data
                 if msg.type == "end_of_track" and skip_first_track:
                     skip_first_track = False
-                elif msg.type == "end_of_track" and skip_first_track == False:
+                elif msg.type == "end_of_track" and skip_first_track is False:
                     if duration + bar_counter < bar_lenght:  # last note and bar not complete
                         note_score.append(200)
+                        full_score.append((200, bar_lenght-bar_counter))
                         bar.append(bar_lenght-bar_counter)
                         rhythm_score.append(tuple(bar))
 
@@ -102,14 +116,24 @@ class MidiService:
                     bar_lenght = tpb * \
                         time_signatures[ts_counter][0] * \
                         (4 // time_signatures[ts_counter][1])
-        self.time_signatures = time_signatures         
+        self.time_signatures = time_signatures
         return (note_score, rhythm_score, full_score)
 
     def save_generated_song(self, score, tempo, file_name="midi_song", first_bar_lenght=1920):
-        tpb = 480
+        """
+        Saves the generated score as a midi-file
+
+        Args:
+            score (list)
+            tempo (int)
+            file_name (str) option for future development in UI
+            first_bar_lenght (int), for time signature
+        """
+
+        tpb = 480 # default ticks per beat
         ts_numerator = (first_bar_lenght // tpb)
         ts_denominator = 4
-        
+
         # Create new file
         midi_file = mido.MidiFile(ticks_per_beat=tpb)
         track = mido.MidiTrack()
@@ -118,12 +142,13 @@ class MidiService:
         # Add tempo message
         track.append(mido.MetaMessage(
             "set_tempo", tempo=mido.bpm2tempo(tempo)))
-        track.append(mido.MetaMessage("time_signature", numerator=ts_numerator, denominator=ts_denominator))
+        track.append(mido.MetaMessage("time_signature",
+                     numerator=ts_numerator, denominator=ts_denominator))
 
         # Go through the score, 200 = rest
         rest_length = 0
         for n in range(len(score)):
-            if  n < len(score) - 1 and score[n][0] == 200:
+            if n < len(score) - 1 and score[n][0] == 200:
                 rest_length += score[n][1]
                 if score[n + 1][0] == 200:
                     continue

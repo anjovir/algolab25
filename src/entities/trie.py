@@ -1,5 +1,6 @@
 import random
 
+
 class TrieNode:
     def __init__(self):
         self.children = {}
@@ -7,26 +8,12 @@ class TrieNode:
     def __str__(self):
         return f"self.children: {self.children} "
 
+
 class Trie:
     def __init__(self, root_node):
         self.root = root_node
 
     def insert(self, score, max_order=100):
-        curr_node = self.root
-
-        for n in range(len(score)):
-            curr_node = self.root
-            for i in range(max_order):
-                if n + i >= len(score):
-                    break
-                index = score[n+i]
-                if index not in curr_node.children or curr_node.children[index] is None:
-                    curr_node.children[index] = [TrieNode(), 1]
-
-                curr_node.children[index][1] += 1
-                curr_node = curr_node.children[index][0]
-    
-    def insert_rhythm(self, score, max_order=100):
         curr_node = self.root
 
         for n in range(len(score)):

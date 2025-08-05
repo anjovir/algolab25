@@ -4,7 +4,16 @@ import mido
 
 
 class MidiSongPlayer:
+    """
+    Class for the midi player
+    """
     def __init__(self, file_path):
+        """
+        Class constructor
+
+        Args:
+            file_path (str)
+        """
         self.file_path = file_path
         self.midi_file = mido.MidiFile(self.file_path)
         self.is_playing = False
@@ -17,6 +26,9 @@ class MidiSongPlayer:
         return self.file_path
 
     def play(self):
+        """
+        Method for playing the song notes with pygame midi-module
+        """
         pygame.midi.init()
         player = pygame.midi.Output(0)
 
@@ -33,6 +45,11 @@ class MidiSongPlayer:
         pygame.midi.quit()
 
     def start_playing(self):
+        """
+        Method for calling the play-method
+
+        Starts a new thread which calls the play-method
+        """
         if not self.is_playing and self.file_path is not None:
             self.thread = Thread(target=self.play)
             self.thread.start()
@@ -40,6 +57,9 @@ class MidiSongPlayer:
             print("Choose a file")
 
     def stop_playing(self):
+        """
+        Stops the play-method
+        """
         self.is_playing = False
         if self.thread is not None:
             self.thread.join()

@@ -1,5 +1,6 @@
 from ui.song_generator import SongGenerator
 
+
 class UI:
     def __init__(self, root):
         self._root = root
