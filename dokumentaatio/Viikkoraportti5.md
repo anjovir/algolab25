@@ -13,9 +13,10 @@
 - 
 
 ## Käytetty tuntimäärä
-- 7
+- 9
 
 ## Mitä teen seuraavaksi?
 - testausta
 - metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta.
 - käyttöliittymän hiomista
+- dokumentaation hiomista

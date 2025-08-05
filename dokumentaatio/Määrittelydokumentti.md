@@ -15,7 +15,7 @@
 - tätä rakennetta käytän Markovin ketjujen muodostamisessa mielivaltaisella asteella
 
 # Riippuvuudet
-- Ohjelmassa musiikin käsittelyyn käytän mm. music21-python kirjastoa
+- Ohjelmassa musiikin käsittelyyn käytän mm. mido-kirjastoa, pygame.midi-moduulia (midi-toistoon), tkinter-kirjastoa (UI) ym.
 
 # Mitä syötteitä ohjelma saa ja miten niitä käytetään?
 - Syötteitä ohjelma saa midi-muodossa
