@@ -10,6 +10,8 @@ class TestTrie(unittest.TestCase):
         self._file_path = "src/data/super_mario_play_test.mid"
         self.order = 4
         self.trie_service._read_file(self._file_path, self.order)
+        self._notes = [(76, 120), (76, 120), (200, 120), (76, 120),
+                 (200, 120), (72, 120), (76, 120), (200, 120), (79, 120)]
 
     def test_constructor_root_node(self):
         self.assertIsInstance(self.trie_service.root, TrieNode)
@@ -26,13 +28,34 @@ class TestTrie(unittest.TestCase):
 
     def test_generate_random_sequence(self):
         seq = self.trie_service.generate_random_sequence_from_data(2)
-        notes = [(76, 120), (76, 120), (200, 120), (76, 120),
-                 (200, 120), (72, 120), (76, 120), (200, 120), (79, 120)]
-        self.assertTrue(any(note in notes for note in seq))
+        self.assertTrue(any(note in self._notes for note in seq))
 
     def test_generate_song(self):
         seq = self.trie_service.generate_random_sequence_from_data(1)
         song = self.trie_service.generate_song(seq, 10, 1)
-        notes = [(76, 120), (76, 120), (200, 120), (76, 120),
-                 (200, 120), (72, 120), (76, 120), (200, 120), (79, 120)]
+        self.assertTrue(note in self._notes for note in song)
+    
+    def test_generate_score_notes(self):
+        file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
+        self.trie_service._read_file(file_path, self.order)
+        notes = self.trie_service.trie_notes.get_unique_sequences(1)        
+        seq = self.trie_service.generate_random_sequence_from_data(1,2)
+        length = 5
+        option = 2
+        song = self.trie_service.generate_score(seq, length, option)
         self.assertTrue(note in notes for note in song)
+
+    def test_generate_score_notes(self):
+        file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
+        self.trie_service._read_file(file_path, self.order)
+        rhythms = self.trie_service.trie_rhythm.get_unique_sequences(1)
+        
+        seq = self.trie_service.generate_random_sequence_from_data(1,2)
+        length = 5
+        option = 2
+        song = self.trie_service.generate_score(seq, length, option)
+        self.assertTrue(rhythm in rhythms for rhythm in song)
+
+    
+        
+

@@ -6,6 +6,7 @@ from services.midi_service import MidiService
 class TestMidiService(unittest.TestCase):
     def setUp(self):
         self.midi_service = MidiService()
+        self._test_file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
         self.test_dir = "src/data/tests"
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
@@ -23,6 +24,11 @@ class TestMidiService(unittest.TestCase):
         file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
         score = self.midi_service.read_midi_file(file_path)
         self.assertEqual(score[2][1], (76, 120))
+    
+    def test_read_midi_file_rhythm_bars(self):
+        score = self.midi_service.read_midi_file(self._test_file_path)
+        for bar in score[1]:
+            self.assertEqual(sum(bar), 1920)
 
     def test_save_last_note(self):
         midi_service1 = MidiService()
