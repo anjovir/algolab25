@@ -6,6 +6,9 @@ class MidiService:
         self._midi_file = None
         self._midi_song_number = 0
         self.time_signatures = None
+    
+    def round_mod_four(self, value):
+        return round(value / 4) * 4
 
     def read_midi_file(self, file_path):
         """
@@ -31,12 +34,14 @@ class MidiService:
         rhythm_score = []
         full_score = []
         measure = []
-        skip_first_track = True
         ts_note_flag = False
         messages = {}
         msg_counter = 0
         ts_counter = -1
         bar_counter = 0
+        duration = 0
+        pitchwheel_duration = 0
+        control_change_duration = 0
 
         for track in self._midi_file.tracks:
             for msg in track:
@@ -45,7 +50,7 @@ class MidiService:
                 note_or_rest = False
                 if msg.type == "note_on":
                     if (messages[msg_counter-1].type == "time_signature" and 
-                        messages[msg_counter-1].time != 0):
+                        self.round_mod_four(messages[msg_counter-1].time) > 0):
                         duration = messages[msg_counter-1].time
                         bar_lenght = tpb * \
                             time_signatures[ts_counter - 1][0] * \
@@ -53,12 +58,17 @@ class MidiService:
                         note_or_rest = True
                         ts_note_flag = True
                         note = 200  # rest
-                    if msg.time > 0:
-                        duration = msg.time
+                    if self.round_mod_four(msg.time) > 0 and msg.velocity > 0:
+                        duration = self.round_mod_four(msg.time + pitchwheel_duration + control_change_duration)
                         note_or_rest = True
                         note = 200  # rest
+                    if msg.time > 0 and msg.velocity == 0:
+                        note = msg.note
+                        duration = self.round_mod_four((msg.time + pitchwheel_duration + control_change_duration))
+                        note_or_rest = True
 
                     pitchwheel_duration = 0
+                    control_change_duration = 0
 
                 elif msg.type == "note_off":
                     if messages[msg_counter-1].type == "time_signature":
@@ -74,6 +84,9 @@ class MidiService:
 
                 elif msg.type == "pitchwheel":
                     pitchwheel_duration += msg.time
+                elif msg.type == "control_change":
+                    control_change_duration +=  msg.time
+
                 elif msg.type == "time_signature":
                     time_signatures.append((msg.numerator, msg.denominator))
                     ts_counter += 1
@@ -102,10 +115,10 @@ class MidiService:
                         measure.append(duration_to_next_bar)
                         bar_counter = duration_to_next_bar
 
-                # In the first track there is no note-data
-                if msg.type == "end_of_track" and skip_first_track:
-                    skip_first_track = False
-                elif msg.type == "end_of_track" and skip_first_track is False:
+                # In the first track there might not be no note-data
+                if msg.type == "end_of_track" and len(time_signatures) == 0:
+                    continue
+                elif msg.type == "end_of_track" and len(time_signatures) > 0:
                     if duration + bar_counter < bar_lenght:  # last note and bar not complete
                         note_score.append(200)
                         full_score.append((200, bar_lenght-bar_counter))
@@ -130,9 +143,10 @@ class MidiService:
             file_name (str) option for future development in UI
             first_bar_lenght (int), for time signature
         """
-
+        bar_lengths = score[1]
+        score = score[0]
         tpb = 480 # default ticks per beat
-        ts_numerator = first_bar_lenght // tpb
+        ts_numerator = bar_lengths[0] // tpb
         ts_denominator = 4
 
         # Create new file
@@ -148,6 +162,8 @@ class MidiService:
 
         # Go through the score, 200 = rest
         rest_length = 0
+        duration_counter = 0
+        bar_counter = 0
         for n in range(len(score)):
             if n < len(score) - 1 and score[n][0] == 200:
                 rest_length += score[n][1]
@@ -158,6 +174,34 @@ class MidiService:
                     'note_on', note=score[n + 1][0], velocity=80, time=rest_length))
                 track.append(mido.Message(
                     'note_off', note=score[n + 1][0], velocity=64, time=score[n + 1][1]))
+                duration_counter += rest_length
+                # Case where measure is full when rest is added
+                if duration_counter == bar_lengths[bar_counter]:
+                    if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
+                        ts_numerator = bar_lengths[bar_counter]
+                        track.append(mido.MetaMessage("time_signature",
+                            numerator=ts_numerator, denominator=ts_denominator))
+                    bar_counter += 1
+                    duration_counter = score[n + 1][1]
+
+                    # Special case with time signature changing with next added note duration
+                    if duration_counter == bar_lengths[bar_counter]:
+                        if bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
+                            ts_numerator = bar_lengths[bar_counter]
+                            track.append(mido.MetaMessage("time_signature",
+                                numerator=ts_numerator, denominator=ts_denominator))
+                        bar_counter += 1
+                        duration_counter = 0
+                # Case where rest + next note duration = full measure
+                elif duration_counter + score[n + 1][1] == bar_lengths[bar_counter]:
+                    if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
+                        ts_numerator = bar_lengths[bar_counter]
+                        track.append(mido.MetaMessage("time_signature",
+                            numerator=ts_numerator, denominator=ts_denominator))
+                    bar_counter += 1
+                    duration_counter = 0
+                else:
+                    duration_counter += score[n + 1][1]
                 rest_length = 0
             elif n > 0 and score[n-1][0] == 200:
                 continue
@@ -169,6 +213,14 @@ class MidiService:
                     'note_on', note=score[n][0], velocity=80, time=0))  # Note start
                 track.append(mido.Message(
                     'note_off', note=score[n][0], velocity=64, time=score[n][1]))  # Note end
+                duration_counter += score[n][1]
+                if duration_counter == bar_lengths[bar_counter]:
+                    if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
+                        ts_numerator = bar_lengths[bar_counter]
+                        track.append(mido.MetaMessage("time_signature",
+                            numerator=ts_numerator, denominator=ts_denominator))
+                    bar_counter += 1
+                    duration_counter = 0
 
         fp = f"src/data/{file_name}{self._midi_song_number}.mid"
         self._midi_song_number += 1

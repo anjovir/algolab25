@@ -10,10 +10,10 @@
 - uuden ominaisuuden lisääminen ohjelmaan johtaa kasautuvaan määrään muutoksia, joita täytyy tehdä ohjelman muissa osissa
 
 ## Mikä jäi epäselväksi tai tuottanut vaikeuksia?
-- 
+- tutustuin toisen opiskelijan midi-kirjastoon, jonka tiedostojen midi-viestien tulkinta on osoittautunut monimutkaiseksi, että ne saisi toimimaan omalla ohjelmalla
 
 ## Käytetty tuntimäärä
-- 9
+- 10
 
 ## Mitä teen seuraavaksi?
 - testausta
