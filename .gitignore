@@ -4,4 +4,7 @@ __pycache__
 .
 htmlcov
 src/data
-.vscode
+.vscode/
+src/data/midi
+src/data/midi2
+src/data/midi3
