@@ -9,7 +9,7 @@ class TestTrie(unittest.TestCase):
         self.trie_service = TrieService()
         self._file_path = "src/data/super_mario_play_test.mid"
         self.order = 4
-        self.trie_service._read_file(self._file_path, self.order)
+        self.file = self.trie_service._read_file(self._file_path, self.order)
         self._notes = [(76, 120), (76, 120), (200, 120), (76, 120),
                  (200, 120), (72, 120), (76, 120), (200, 120), (79, 120)]
 
@@ -23,8 +23,7 @@ class TestTrie(unittest.TestCase):
         self.assertIsInstance(self.trie_service._midi_service, MidiService)
 
     def test_read_file(self):
-        self.trie_service._trie_read_succesfully
-        self.assertTrue(self.trie_service._trie_read_succesfully)
+        self.assertTrue(self.file)
 
     def test_generate_random_sequence(self):
         seq = self.trie_service.generate_random_sequence_from_data(2)

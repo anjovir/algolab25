@@ -48,13 +48,18 @@ class SongGenerator:
             master=self._frame1, text="Open midi file", command=self._open_midi_file)
         self.open_file_button.grid(row=1, column=0, padx=5, pady=5)
 
+        self.open_directory_button = tk.Button(
+            master=self._frame1, text="Open directory", command=self._process_directory_midi_files)
+        self.open_directory_button.grid(row=1, column=1, padx=5, pady=5)
+
         self.read_to_trie_button = tk.Button(
             master=self._frame1, text="Read file", command=self.read_file_to_trie)
-        self.read_to_trie_button.grid(row=1, column=1, padx=5, pady=5)
+        self.read_to_trie_button.grid(row=1, column=2, padx=5, pady=5)
+        
 
         self.reset_trie_button = tk.Button(
             master=self._frame1, text="Reset trie", command=self.reset_trie)
-        self.reset_trie_button.grid(row=1, column=2, padx=5, pady=5)
+        self.reset_trie_button.grid(row=1, column=3, padx=5, pady=5)
 
         self.generator_option1_button = tk.Radiobutton(master=self._frame1,
                                                        text="Notes and rhythm considered as an unit",
@@ -191,9 +196,9 @@ class SongGenerator:
         self.song_notes.config(text=sequence, wraplength=700)
 
     def read_file_to_trie(self):
-        self._trie_service._read_file(
+        success = self._trie_service._read_file(
             self._file_path, self.mc_order_trie_slider.get())
-        if self._trie_service._trie_read_succesfully:
+        if success:
             self.status.config(
                 text="File loaded successfully to trie")
         else:
@@ -212,7 +217,18 @@ class SongGenerator:
                 command=self.generate_and_print_starting_sequence)
             self.generate_song_button.config(
                 command=self.generate_and_print_song_notes)
-
+    
+    def _process_directory_midi_files(self):
+        directory = filedialog.askdirectory(title="Choose a directory which midi-files you want to load")
+        if directory:
+            success = self._trie_service.process_midi_files(directory, self.mc_order_trie_slider.get())
+            print(success)
+            if success:
+                self.status.config(
+                    text="File loaded successfully to trie")
+            else:
+                self.status.config(text="Loading failed")
+        
     def window_exit(self):
         close = messagebox.askyesno("Exit?", "Are you sure you want to exit?")
         if close:

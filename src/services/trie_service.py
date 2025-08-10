@@ -1,6 +1,7 @@
 import random
 from entities.trie import Trie, TrieNode
 from services.midi_service import MidiService
+import os
 
 
 class TrieService:
@@ -36,7 +37,17 @@ class TrieService:
             mc_order (int) Markov chain order
         """
         score = self._midi_service.read_midi_file(file_path)
-        self._trie_read_succesfully = self._insert_to_trie(score, mc_order)
+        return self._insert_to_trie(score, mc_order)
+    
+    def process_midi_files(self, directory, mc_order):
+        for filename in os.listdir(directory):
+            if filename.endswith(".mid"):
+                file_path = os.path.join(directory, filename)
+                success = self._read_file(file_path, mc_order)
+                if not success:
+                    return False
+        return True
+
 
     def _insert_to_trie(self, score, mc_order):
         """
@@ -110,14 +121,11 @@ class TrieService:
             Score (list)        
         """
         if option == 1:
-            return self.generate_song(sequence, lenght, 1)
+            return (self.generate_song(sequence, lenght, 1), ((1920,1920)))
         if option == 2:
             rhythm_score = self.generate_song(sequence[1], lenght, 2)
             rhythm_score_bar_lengths = [sum(bar) for bar in rhythm_score]
-            #print(rhythm_score)
-            #print("\nBAR LENGTH\n",rhythm_score_bar_lengths)
             rhythm_score = [note for bar in rhythm_score for note in bar]
-            #print(rhythm_score)
             quantum_of_notes = len(rhythm_score)
             note_score = self.generate_song(sequence[0], quantum_of_notes, 3)
         return (list(zip(note_score, rhythm_score)), rhythm_score_bar_lengths)

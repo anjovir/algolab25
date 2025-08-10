@@ -53,3 +53,26 @@ class TestMidiService(unittest.TestCase):
         test_score = [(80, 120), (82, 120), (200, 240),
                       (80, 120), (90, 120), (200, 120), (83, 120), (200,960)]
         self.assertEqual(test_score, score[2])
+    
+    def test_read_file_quantification_works(self):
+        file = "src/data/midi_test_data/1981396.mid"
+        midi_file = self.midi_service.read_midi_file(file)
+        self.assertEqual(0, midi_file[1][0][0] % 40)
+        self.assertEqual(0, self.midi_service.read_midi_file(self._test_file_path)[1][0][0] % 40)
+    
+    def test_read_file_no_negatives(self):
+        file = "src/data/midi_test_data/639.mid"
+        midi_file = self.midi_service.read_midi_file(file)
+        for bar in midi_file[1]:
+            for note in bar:        
+                self.assertLess(0, note)
+    
+    def test_read_file_no_zero_rhythms(self):
+        files = ["src/data/midi_test_data/806.mid", "src/data/midi_test_data/1981736.mid"]
+        for file in files:
+            midi_file = self.midi_service.read_midi_file(file)
+            for bar in midi_file[1]:
+                for note in bar:        
+                    self.assertIsNot(0, note)
+
+        

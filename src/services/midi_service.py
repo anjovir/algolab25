@@ -9,6 +9,13 @@ class MidiService:
     
     def round_mod_four(self, value):
         return round(value / 4) * 4
+    
+    def rest_quantizer(self, numerator, denominator):
+        result = denominator * ((numerator / denominator) - int(numerator / denominator))
+        if result > 0:
+            return result
+        else:
+            return denominator
 
     def read_midi_file(self, file_path):
         """
@@ -42,15 +49,22 @@ class MidiService:
         duration = 0
         pitchwheel_duration = 0
         control_change_duration = 0
+        msgs = {}
+        note_on_ts_flag = False
+        note_q_flag = False
 
         for track in self._midi_file.tracks:
+            for m in range(len(track)):
+                msgs[m] = track[m]
+
             for msg in track:
                 msg_counter += 1
                 messages[msg_counter] = msg
                 note_or_rest = False
                 if msg.type == "note_on":
                     if (messages[msg_counter-1].type == "time_signature" and 
-                        self.round_mod_four(messages[msg_counter-1].time) > 0):
+                        self.round_mod_four(messages[msg_counter-1].time) > 0 and
+                        note_on_ts_flag is False):
                         duration = messages[msg_counter-1].time
                         bar_lenght = tpb * \
                             time_signatures[ts_counter - 1][0] * \
@@ -58,14 +72,40 @@ class MidiService:
                         note_or_rest = True
                         ts_note_flag = True
                         note = 200  # rest
-                    if self.round_mod_four(msg.time) > 0 and msg.velocity > 0:
-                        duration = self.round_mod_four(msg.time + pitchwheel_duration + control_change_duration)
-                        note_or_rest = True
-                        note = 200  # rest
-                    if msg.time > 0 and msg.velocity == 0:
+                    elif self.round_mod_four(msg.time) > 0 and msg.velocity > 0:
+                        if not note_q_flag:
+                            if msg.time + pitchwheel_duration + control_change_duration > 2 * bar_lenght:
+                                duration = self.rest_quantizer(
+                                    self.round_mod_four(msg.time + pitchwheel_duration + control_change_duration),
+                                    bar_lenght)
+                            else:
+                                duration = self.round_mod_four(msg.time + pitchwheel_duration + control_change_duration)
+                            note_on_ts_flag = False
+                            note_or_rest = True
+                            note = 200  # rest
+                        else:
+                            note_q_flag = False
+                    elif msg.time > 0 and msg.velocity == 0:
                         note = msg.note
                         duration = self.round_mod_four((msg.time + pitchwheel_duration + control_change_duration))
+                        if (msg_counter < len(msgs) and msgs[msg_counter].type == "time_signature" and
+                            note_on_ts_flag is False and msgs[msg_counter].time < bar_lenght):
+                            duration += self.round_mod_four(msgs[msg_counter].time)
+                            note_on_ts_flag = True
+                        elif (msg_counter < len(msgs) and msgs[msg_counter].type == "note_on" and
+                              msgs[msg_counter].velocity > 0 and msgs[msg_counter].time < 150 and
+                              msgs[msg_counter].time > 4 and msgs[msg_counter].time % 20 != 0):
+                            duration += self.round_mod_four(msgs[msg_counter].time)
+                            note_q_flag = True
+                        elif (msg_counter < len(msgs) and msgs[msg_counter].type == "note_on" and
+                              msgs[msg_counter].velocity > 0 and msgs[msg_counter].time + msg.time > bar_lenght and
+                              msgs[msg_counter].time % 20 != 0 and msgs[msg_counter].time < 2 * bar_lenght):
+                            duration += self.round_mod_four(msgs[msg_counter].time)
+                            note_q_flag = True
                         note_or_rest = True
+                    if note_on_ts_flag and self.round_mod_four(msg.time) == 0:
+                        note_on_ts_flag = False
+                        
 
                     pitchwheel_duration = 0
                     control_change_duration = 0
@@ -78,7 +118,9 @@ class MidiService:
                             (4 // time_signatures[ts_counter - 1][1])
                         ts_note_flag = True
                     else:
-                        duration = msg.time + pitchwheel_duration
+                        duration = msg.time + pitchwheel_duration + control_change_duration
+                        pitchwheel_duration = 0
+                        control_change_duration = 0
                     note = msg.note
                     note_or_rest = True
 
@@ -86,18 +128,25 @@ class MidiService:
                     pitchwheel_duration += msg.time
                 elif msg.type == "control_change":
                     control_change_duration +=  msg.time
-
                 elif msg.type == "time_signature":
                     time_signatures.append((msg.numerator, msg.denominator))
                     ts_counter += 1
-                    bar_lenght = tpb * msg.numerator * (4 // msg.denominator)
+                    bar_lenght = tpb * msg.numerator * (4 / msg.denominator)
                 elif msg.type == "set_tempo":
                     bpms.append(mido.tempo2bpm(msg.tempo))
-
+                          
                 if note_or_rest:
                     note_score.append(note)
+                    if duration > bar_lenght and note == 200:
+                        remainder = duration % bar_lenght
+                        if remainder > 0:
+                            duration = int(remainder * bar_lenght + bar_lenght)
+                        else:
+                            duration = bar_lenght
+                    duration = int(duration)
+                    bar_lenght = int(bar_lenght)
                     full_score.append((note, duration))
-
+                    
                     if duration + bar_counter < bar_lenght:
                         measure.append(duration)
                         bar_counter += duration
@@ -115,7 +164,7 @@ class MidiService:
                         measure.append(duration_to_next_bar)
                         bar_counter = duration_to_next_bar
 
-                # In the first track there might not be no note-data
+                # In the first track there might not be note-data
                 if msg.type == "end_of_track" and len(time_signatures) == 0:
                     continue
                 elif msg.type == "end_of_track" and len(time_signatures) > 0:
@@ -130,6 +179,7 @@ class MidiService:
                     bar_lenght = tpb * \
                         time_signatures[ts_counter][0] * \
                         (4 // time_signatures[ts_counter][1])
+ 
         self.time_signatures = time_signatures
         return (note_score, rhythm_score, full_score)
 
@@ -172,36 +222,42 @@ class MidiService:
                 # Rest duration has to be applied to a next note_on message
                 track.append(mido.Message(
                     'note_on', note=score[n + 1][0], velocity=80, time=rest_length))
-                track.append(mido.Message(
-                    'note_off', note=score[n + 1][0], velocity=64, time=score[n + 1][1]))
+                
                 duration_counter += rest_length
                 # Case where measure is full when rest is added
                 if duration_counter == bar_lengths[bar_counter]:
                     if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
-                        ts_numerator = bar_lengths[bar_counter]
+                        ts_numerator = bar_lengths[bar_counter] // tpb
                         track.append(mido.MetaMessage("time_signature",
                             numerator=ts_numerator, denominator=ts_denominator))
-                    bar_counter += 1
+                    if bar_counter + 1 < len(bar_lengths):
+                        bar_counter += 1
                     duration_counter = score[n + 1][1]
 
                     # Special case with time signature changing with next added note duration
                     if duration_counter == bar_lengths[bar_counter]:
                         if bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
-                            ts_numerator = bar_lengths[bar_counter]
+                            ts_numerator = bar_lengths[bar_counter] // tpb
                             track.append(mido.MetaMessage("time_signature",
                                 numerator=ts_numerator, denominator=ts_denominator))
-                        bar_counter += 1
+                        if bar_counter + 1 < len(bar_lengths):
+                            bar_counter += 1
+                        
                         duration_counter = 0
                 # Case where rest + next note duration = full measure
                 elif duration_counter + score[n + 1][1] == bar_lengths[bar_counter]:
                     if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
-                        ts_numerator = bar_lengths[bar_counter]
+                        ts_numerator = bar_lengths[bar_counter] // tpb
                         track.append(mido.MetaMessage("time_signature",
                             numerator=ts_numerator, denominator=ts_denominator))
-                    bar_counter += 1
+                    if bar_counter + 1 < len(bar_lengths):
+                        bar_counter += 1
                     duration_counter = 0
                 else:
                     duration_counter += score[n + 1][1]
+
+                track.append(mido.Message(
+                    'note_off', note=score[n + 1][0], velocity=64, time=score[n + 1][1]))
                 rest_length = 0
             elif n > 0 and score[n-1][0] == 200:
                 continue
@@ -216,10 +272,11 @@ class MidiService:
                 duration_counter += score[n][1]
                 if duration_counter == bar_lengths[bar_counter]:
                     if bar_counter > 0 and bar_lengths[bar_counter - 1] != bar_lengths[bar_counter]:
-                        ts_numerator = bar_lengths[bar_counter]
+                        ts_numerator = bar_lengths[bar_counter] // tpb
                         track.append(mido.MetaMessage("time_signature",
                             numerator=ts_numerator, denominator=ts_denominator))
-                    bar_counter += 1
+                    if bar_counter + 1 < len(bar_lengths):
+                        bar_counter += 1
                     duration_counter = 0
 
         fp = f"src/data/{file_name}{self._midi_song_number}.mid"
