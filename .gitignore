@@ -3,8 +3,8 @@ __pycache__
 .coverage
 .
 htmlcov
-src/data
 .vscode/
 src/data/midi
-src/data/midi2
-src/data/midi3
+src/data/midi 2
+src/data/midi 3
+src/data/tests
