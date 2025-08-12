@@ -168,8 +168,6 @@ class SongGenerator:
     def generate_starting_sequence(self):
         self._starting_sequence = self._trie_service.generate_random_sequence_from_data(
             self.mc_order_song_slider.get(), self.option_var.get())
-        if self.option_var.get() == 2:
-            self.first_bar_length = self._starting_sequence[2]
 
     def print_starting_sequence(self):
         if self.option_var.get() == 2:
@@ -189,7 +187,7 @@ class SongGenerator:
         self._song_score = self._trie_service.generate_score(
             self._starting_sequence, self.choose_song_lenght_slider.get(), self.option_var.get())
         self._midi_service.save_generated_song(
-            self._song_score, tempo=self.set_tempo_slider.get(), first_bar_lenght=self.first_bar_length)
+            self._song_score, tempo=self.set_tempo_slider.get())
 
     def print_song_notes(self):
         sequence = f"FULL SCORE:\n{str(self._song_score)}"
@@ -222,7 +220,6 @@ class SongGenerator:
         directory = filedialog.askdirectory(title="Choose a directory which midi-files you want to load")
         if directory:
             success = self._trie_service.process_midi_files(directory, self.mc_order_trie_slider.get())
-            print(success)
             if success:
                 self.status.config(
                     text="File loaded successfully to trie")

@@ -1,7 +1,8 @@
+import os
 import random
 from entities.trie import Trie, TrieNode
 from services.midi_service import MidiService
-import os
+
 
 
 class TrieService:
@@ -38,7 +39,7 @@ class TrieService:
         """
         score = self._midi_service.read_midi_file(file_path)
         return self._insert_to_trie(score, mc_order)
-    
+
     def process_midi_files(self, directory, mc_order):
         for filename in os.listdir(directory):
             if filename.endswith(".mid"):
@@ -102,10 +103,9 @@ class TrieService:
         if option == 2:
             rhythm_seqs = self.trie_rhythm.get_unique_sequences(1)
             rhythm_seq = rhythm_seqs[random.randint(0, (len(rhythm_seqs) - 1))]
-            first_bar_rhythm_length = sum(rhythm_seq[0]) # for the midi-file save method
             note_seqs = self.trie_notes.get_unique_sequences(order)
             note_seq = note_seqs[random.randint(0, (len(note_seqs) - 1))]
-            return (note_seq, rhythm_seq, first_bar_rhythm_length)
+            return (note_seq, rhythm_seq)
 
     def generate_score(self, sequence, lenght, option=1):
         """
@@ -124,8 +124,8 @@ class TrieService:
             return (self.generate_song(sequence, lenght, 1), ((1920,1920)))
         if option == 2:
             rhythm_score = self.generate_song(sequence[1], lenght, 2)
-            rhythm_score_bar_lengths = [sum(bar) for bar in rhythm_score]
-            rhythm_score = [note for bar in rhythm_score for note in bar]
+            rhythm_score_bar_lengths = [sum(measure) for measure in rhythm_score]
+            rhythm_score = [note for measure in rhythm_score for note in measure]
             quantum_of_notes = len(rhythm_score)
             note_score = self.generate_song(sequence[0], quantum_of_notes, 3)
         return (list(zip(note_score, rhythm_score)), rhythm_score_bar_lengths)

@@ -12,7 +12,7 @@
 
 ## Mikä jäi epäselväksi tai tuottanut vaikeuksia?
 - tutustuin toisen opiskelijan midi-tiedostojen kirjastoon, jonka tiedostojen midi-viestien tulkinta on osoittautunut todella monimutkaiseksi
-- midi-tiedoston voi näköjään rakentaa hyvin monella eri tavalla, mikä siirtää työtä tämän datan muokkaamiseen sopivaksi kappalegeneraattorille
+- midi-tiedoston voi näköjään rakentaa hyvin monella eri tavalla, mikä siirtää työn painopistettä tämän datan muokkaamiseen sopivaksi kappalegeneraattorille
 
 ## Käytetty tuntimäärä
 - 12

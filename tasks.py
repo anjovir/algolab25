@@ -6,10 +6,6 @@ from sys import platform
 def start(ctx):
     ctx.run("python src/index.py")
 
-#@task
-#def build(ctx):
-#    ctx.run("python3 src/build.py", pty=True)
-
 @task
 def test(ctx):
     ctx.run("pytest src")
