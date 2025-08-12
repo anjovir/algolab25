@@ -10,6 +10,11 @@ class TestMidiService(unittest.TestCase):
         self.test_dir = "src/data/tests"
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
+        self.test_directory = "src/data/midi_test_data"
+        self.test_files = []
+        for filename in os.listdir(self.test_directory):
+            if filename.endswith(".mid"):
+                self.test_files.append(os.path.join(self.test_directory, filename))
 
     def tearDown(self):
         for file in os.listdir(self.test_dir):
@@ -35,7 +40,7 @@ class TestMidiService(unittest.TestCase):
         original_score = [[(80, 120), (82, 120), (200, 120),
                           (200, 120), (80, 120), (90, 120), (83, 120), (200, 120)], [(1920)]]
         file_name = "tests/last_note"
-        midi_service1.save_generated_song(original_score, 120, file_name, 1920)
+        midi_service1.save_generated_song(original_score, 120, file_name)
         file_path = f"src\\data\\{file_name}{0}.mid"
         score = midi_service1.read_midi_file(file_path)
         test_score = [(80, 120), (82, 120), (200, 240),
@@ -55,21 +60,20 @@ class TestMidiService(unittest.TestCase):
         self.assertEqual(test_score, score[2])
     
     def test_read_file_quantification_works(self):
-        file = "src/data/midi_test_data/1981396.mid"
-        midi_file = self.midi_service.read_midi_file(file)
-        self.assertEqual(0, midi_file[1][0][0] % 40)
-        self.assertEqual(0, self.midi_service.read_midi_file(self._test_file_path)[1][0][0] % 40)
+         for file in self.test_files:
+            midi_file = self.midi_service.read_midi_file(file)
+            self.assertEqual(0, midi_file[1][0][0] % 40)
+            self.assertEqual(0, self.midi_service.read_midi_file(self._test_file_path)[1][0][0] % 40)
     
     def test_read_file_no_negatives(self):
-        file = "src/data/midi_test_data/639.mid"
-        midi_file = self.midi_service.read_midi_file(file)
-        for bar in midi_file[1]:
-            for note in bar:        
-                self.assertLess(0, note)
+         for file in self.test_files:
+            midi_file = self.midi_service.read_midi_file(file)
+            for bar in midi_file[1]:
+                for note in bar:        
+                    self.assertLess(0, note)
     
     def test_read_file_no_zero_rhythms(self):
-        files = ["src/data/midi_test_data/806.mid", "src/data/midi_test_data/1981736.mid"]
-        for file in files:
+        for file in self.test_files:
             midi_file = self.midi_service.read_midi_file(file)
             for bar in midi_file[1]:
                 for note in bar:        

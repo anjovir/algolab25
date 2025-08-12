@@ -4,7 +4,7 @@
 Sovelluksen testaukseen käytetään Unittestiä. Automaattitestauksessa testataan entities- ja services-kansioiden luokat. Käyttöliittymän testaus jää yksikkötestauksen ulkopuolella. Automaattitesteillä testataan sovelluksen reagointia oikeanmuotoisilla syötteillä.
 
 ### Testikattavuus
-(![Testikattavuuden tilanne 10.8.2025](image-1.png))
+(![Testikattavuuden tilanne 10.8.2025](image.png))
 
 ## Käyttöliittymätestaus
 Käyttöliittymätestaus on toteutettu manuaalisesti ja siinä keskitytty sovelluksen käytettävyyteen.

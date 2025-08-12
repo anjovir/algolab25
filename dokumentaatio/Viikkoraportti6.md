@@ -15,7 +15,7 @@
 - midi-tiedoston voi näköjään rakentaa hyvin monella eri tavalla, mikä siirtää työn painopistettä tämän datan muokkaamiseen sopivaksi kappalegeneraattorille
 
 ## Käytetty tuntimäärä
-- 12
+- 13
 
 ## Mitä teen seuraavaksi?
 - testausta: täytyy tehdä tiedoston lukemiseen testi, jossa tietyn kansion kaikki midi-tiedostot luetaan ja testataan kerralla
