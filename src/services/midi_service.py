@@ -41,30 +41,24 @@ class MidiService:
         full_score = []
         measure = []
         ts_note_flag = False
-        messages = {}
-        msg_counter = 0
         ts_counter = -1
         bar_counter = 0
         duration = 0
         pitchwheel_duration = 0
         control_change_duration = 0
-        msgs = {}
         note_on_ts_flag = False
         note_q_flag = False
 
         for track in self._midi_file.tracks:
-            for m in range(len(track)):
-                msgs[m] = track[m]
-
+            msg_counter = 0
             for msg in track:
                 msg_counter += 1
-                messages[msg_counter] = msg
                 note_or_rest = False
                 if msg.type == "note_on":
-                    if (messages[msg_counter-1].type == "time_signature" and
-                        self.round_mod_four(messages[msg_counter-1].time) > 0 and
+                    if (track[msg_counter-2].type == "time_signature" and
+                        self.round_mod_four(track[msg_counter-2].time) > 0 and
                         note_on_ts_flag is False):
-                        duration = messages[msg_counter-1].time
+                        duration = track[msg_counter-2].time
                         bar_lenght = tpb * \
                             time_signatures[ts_counter - 1][0] * \
                             (4 // time_signatures[ts_counter - 1][1])
@@ -98,27 +92,27 @@ class MidiService:
                                                         control_change_duration))
 
                         # Different next note_on midi-message cases
-                        if (msg_counter < len(msgs) and
-                            msgs[msg_counter].type == "time_signature" and
+                        if (msg_counter < len(track) and
+                            track[msg_counter].type == "time_signature" and
                             note_on_ts_flag is False and
-                            msgs[msg_counter].time < bar_lenght):
-                            duration += self.round_mod_four(msgs[msg_counter].time)
+                            track[msg_counter].time < bar_lenght):
+                            duration += self.round_mod_four(track[msg_counter].time)
                             note_on_ts_flag = True
-                        elif (msg_counter < len(msgs) and
-                              msgs[msg_counter].type == "note_on" and
-                              msgs[msg_counter].velocity > 0 and
-                              msgs[msg_counter].time < 150 and
-                              msgs[msg_counter].time > 4 and
-                              msgs[msg_counter].time % 20 != 0):
-                            duration += self.round_mod_four(msgs[msg_counter].time)
+                        elif (msg_counter < len(track) and
+                              track[msg_counter].type == "note_on" and
+                              track[msg_counter].velocity > 0 and
+                              track[msg_counter].time < 150 and
+                              track[msg_counter].time > 4 and
+                              track[msg_counter].time % 20 != 0):
+                            duration += self.round_mod_four(track[msg_counter].time)
                             note_q_flag = True
-                        elif (msg_counter < len(msgs) and
-                              msgs[msg_counter].type == "note_on" and
-                              msgs[msg_counter].velocity > 0 and
-                              msgs[msg_counter].time + msg.time > bar_lenght and
-                              msgs[msg_counter].time % 20 != 0 and
-                              msgs[msg_counter].time < 2 * bar_lenght):
-                            duration += self.round_mod_four(msgs[msg_counter].time)
+                        elif (msg_counter < len(track) and
+                              track[msg_counter].type == "note_on" and
+                              track[msg_counter].velocity > 0 and
+                              track[msg_counter].time + msg.time > bar_lenght and
+                              track[msg_counter].time % 20 != 0 and
+                              track[msg_counter].time < 2 * bar_lenght):
+                            duration += self.round_mod_four(track[msg_counter].time)
                             note_q_flag = True
 
                         note_or_rest = True
@@ -130,8 +124,8 @@ class MidiService:
                     control_change_duration = 0
 
                 elif msg.type == "note_off":
-                    if messages[msg_counter-1].type == "time_signature":
-                        duration = messages[msg_counter-1].time
+                    if track[msg_counter-2].type == "time_signature":
+                        duration = track[msg_counter-2].time
                         bar_lenght = tpb * \
                             time_signatures[ts_counter - 1][0] * \
                             (4 // time_signatures[ts_counter - 1][1])
@@ -165,7 +159,6 @@ class MidiService:
                     duration = int(duration)
                     bar_lenght = int(bar_lenght)
                     full_score.append((note, duration))
-
                     if duration + bar_counter < bar_lenght:
                         measure.append(duration)
                         bar_counter += duration
@@ -200,6 +193,7 @@ class MidiService:
                         (4 // time_signatures[ts_counter][1])
 
         self.time_signatures = time_signatures
+        print("NS\n",note_score, "RS\n",rhythm_score, "FS\n",full_score)
         return (note_score, rhythm_score, full_score)
 
     def save_generated_song(self, score, tempo, file_name="midi_song"):
@@ -210,7 +204,6 @@ class MidiService:
             score (list)
             tempo (int)
             file_name (str) option for future development in UI
-            first_bar_lenght (int), for time signature
         """
         bar_lengths = score[1]
         score = score[0]
@@ -223,7 +216,7 @@ class MidiService:
         track = mido.MidiTrack()
         midi_file.tracks.append(track)
 
-        # Add tempo message
+        # Add tempo and time signature messages
         track.append(mido.MetaMessage(
             "set_tempo", tempo=mido.bpm2tempo(tempo)))
         track.append(mido.MetaMessage("time_signature",

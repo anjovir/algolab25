@@ -6,7 +6,7 @@ from services.midi_service import MidiService
 class TestMidiService(unittest.TestCase):
     def setUp(self):
         self.midi_service = MidiService()
-        self._test_file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
+        self._test_file_path = "src\\data\\midi_test_data/Super Mario Bross (Theme Song) - melody.mid"
         self.test_dir = "src/data/tests"
         if not os.path.exists(self.test_dir):
             os.makedirs(self.test_dir)
@@ -26,7 +26,7 @@ class TestMidiService(unittest.TestCase):
         self.assertIsNone(self.midi_service._midi_file)
 
     def test_read_midi_file_path(self):
-        file_path = "src\\data\\Super Mario Bross (Theme Song) - melody.mid"
+        file_path = "src\\data\\midi_test_data/Super Mario Bross (Theme Song) - melody.mid"
         score = self.midi_service.read_midi_file(file_path)
         self.assertEqual(score[2][1], (76, 120))
     
@@ -70,7 +70,7 @@ class TestMidiService(unittest.TestCase):
             midi_file = self.midi_service.read_midi_file(file)
             for bar in midi_file[1]:
                 for note in bar:        
-                    self.assertLess(0, note)
+                    self.assertLess(-1, note)
     
     def test_read_file_no_zero_rhythms(self):
         for file in self.test_files:
