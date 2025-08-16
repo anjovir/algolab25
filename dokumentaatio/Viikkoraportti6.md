@@ -15,10 +15,10 @@
 - midi-tiedoston voi näköjään rakentaa hyvin monella eri tavalla, mikä siirtää työn painopistettä tämän datan muokkaamiseen sopivaksi kappalegeneraattorille
 
 ## Käytetty tuntimäärä
-- 14
+- 14,5
 
 ## Mitä teen seuraavaksi?
-- testausta: täytyy tehdä tiedoston lukemiseen testi, jossa tietyn kansion kaikki midi-tiedostot luetaan ja testataan kerralla
-- käyttöliittymän hiomista
+- testausta
 - dokumentaation hiomista
-- metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta.
+- käyttöliittymän hiomista
+- jäänee ulkopuolelle: metodi midi-kappaleen käsittelyyn, jotta siitä saadaan melodia irti syötedataksi manuaalisen käsittelyn sijasta.
