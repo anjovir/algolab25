@@ -95,12 +95,12 @@ class TrieService:
                 sequence (list) of notes with rhythms
             option 2:
                 sequence (tuple) 
-                    of lists with notes, rhythm and 1.bar rhythm length (int)
+                    of lists with notes, rhythm
         """
         if option == 1:
             seqs = self.trie.get_unique_sequences(order)
             return seqs[random.randint(0, (len(seqs) - 1))]
-        if option == 2:
+        if option == 2 or option == 3:
             rhythm_seqs = self.trie_rhythm.get_unique_sequences(1)
             rhythm_seq = rhythm_seqs[random.randint(0, (len(rhythm_seqs) - 1))]
             note_seqs = self.trie_notes.get_unique_sequences(order)
@@ -159,12 +159,14 @@ class TrieService:
             while not generated_note:
                 while_counter += 1
                 sequence = self.generate_random_sequence_from_data(
-                    len(sequence))
+                    len(sequence), option)
                 if option == 1:
                     generated_note = self.trie.get_next_note(sequence)
                 elif option == 2:
+                    sequence = sequence[1]
                     generated_note = self.trie_rhythm.get_next_note(sequence)
                 elif option == 3:
+                    sequence = sequence[0]
                     generated_note = self.trie_notes.get_next_note(sequence)
                 if while_counter > 100:
                     return False

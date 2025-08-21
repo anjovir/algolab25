@@ -88,17 +88,16 @@ class Trie:
                 can be tuple, list or int
         """
         curr_node = self.root
+        sequence = tuple(sequence)
         for element in sequence:
             if curr_node.children[element][0] is None:
                 return False
 
             curr_node = curr_node.children[element][0]
-
         elements = []
         for n in curr_node.children:
             if curr_node.children[n][1] > 0:
                 elements.extend([n]*curr_node.children[n][1])
-
         if len(elements) < 1:
             return False
         next_element = elements[random.randint(0, len(elements)-1)]
