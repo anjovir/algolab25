@@ -193,7 +193,6 @@ class MidiService:
                         (4 // time_signatures[ts_counter][1])
 
         self.time_signatures = time_signatures
-        print("NS\n",note_score, "RS\n",rhythm_score, "FS\n",full_score)
         return (note_score, rhythm_score, full_score)
 
     def save_generated_song(self, score, tempo, file_name="midi_song"):
