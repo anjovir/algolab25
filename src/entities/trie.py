@@ -78,7 +78,7 @@ class Trie:
 
     def get_next_note(self, sequence):
         """
-        Checks the TrieNode for the next to based on input sequence
+        Checks the TrieNode for the next note based on input sequence
 
         Args:
             sequence(list)
@@ -90,7 +90,7 @@ class Trie:
         curr_node = self.root
         sequence = tuple(sequence)
         for element in sequence:
-            if curr_node.children[element][0] is None:
+            if not curr_node.children or element not in curr_node.children.keys() or curr_node.children[element][0] is None:
                 return False
 
             curr_node = curr_node.children[element][0]

@@ -79,7 +79,7 @@ class TestTrie(unittest.TestCase):
         notes = self.trie_service.trie.get_unique_sequences(1)        
         seq = self.trie_service.generate_random_sequence_from_data(1,1)
         option = 1
-        next_note = self.trie_service._generate_next_note_again(seq, option)
+        next_note = self.trie_service._generate_next_note_again(seq[0], option)
         self.assertTrue([next_note] in notes)
 
         

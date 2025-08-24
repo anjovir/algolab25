@@ -196,16 +196,11 @@ class TrieService:
         markov_chain_song = []
         for s in sequence:
             markov_chain_song.append(s)
-        while_counter = 0
         while length > 0:
             generated_note = self._generate_next_note(sequence, option)
-
             # Sometimes there is no next element (note) for the sequence, this is a workaround
             while not generated_note:
-                while_counter += 1
                 generated_note = self._generate_next_note_again(sequence, option)
-                if while_counter > 100:
-                    return False
 
             markov_chain_song.append(generated_note)
             sequence.pop(0)

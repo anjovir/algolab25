@@ -15,6 +15,18 @@ class MidiService:
         if result > 0:
             return result
         return denominator
+    
+    def _note_on_case_ts(self, track, msg_counter, time_signatures, ts_counter, tpb):
+        duration = track[msg_counter-2].time
+        bar_lenght = tpb * \
+            time_signatures[ts_counter - 1][0] * \
+            (4 // time_signatures[ts_counter - 1][1])
+        note_or_rest = True
+        ts_note_flag = True
+        note = 200  # rest
+        return (duration, bar_lenght, note_or_rest, ts_note_flag, note)
+        
+
 
     def read_midi_file(self, file_path):
         """
@@ -35,7 +47,6 @@ class MidiService:
         tpb = self._midi_file.ticks_per_beat
 
         time_signatures = []
-        bpms = []
         note_score = []
         rhythm_score = []
         full_score = []
@@ -54,17 +65,25 @@ class MidiService:
             for msg in track:
                 msg_counter += 1
                 note_or_rest = False
-                if msg.type == "note_on":
+
+                if msg.type == "time_signature":
+                    time_signatures.append((msg.numerator, msg.denominator))
+                    ts_counter += 1
+                    bar_lenght = tpb * msg.numerator * (4 / msg.denominator)
+                elif msg.type == "pitchwheel":
+                    pitchwheel_duration += msg.time
+                elif msg.type == "control_change":
+                    control_change_duration +=  msg.time
+                elif msg.type == "note_on":
                     if (track[msg_counter-2].type == "time_signature" and
                         self.round_mod_four(track[msg_counter-2].time) > 0 and
                         note_on_ts_flag is False):
-                        duration = track[msg_counter-2].time
-                        bar_lenght = tpb * \
-                            time_signatures[ts_counter - 1][0] * \
-                            (4 // time_signatures[ts_counter - 1][1])
-                        note_or_rest = True
-                        ts_note_flag = True
-                        note = 200  # rest
+                        r = self._note_on_case_ts(track, msg_counter, time_signatures, ts_counter, tpb)
+                        duration = r[0]
+                        bar_lenght = r[1]
+                        note_or_rest = r[2]
+                        ts_note_flag = r[3]
+                        note = r[4]
                     elif self.round_mod_four(msg.time) > 0 and msg.velocity > 0:
                         if not note_q_flag:
                             if (msg.time +
@@ -91,7 +110,7 @@ class MidiService:
                                                         pitchwheel_duration +
                                                         control_change_duration))
 
-                        # Different next note_on midi-message cases
+                        # Further different next note_on midi-message cases
                         if (msg_counter < len(track) and
                             track[msg_counter].type == "time_signature" and
                             note_on_ts_flag is False and
@@ -136,17 +155,6 @@ class MidiService:
                         control_change_duration = 0
                     note = msg.note
                     note_or_rest = True
-
-                elif msg.type == "pitchwheel":
-                    pitchwheel_duration += msg.time
-                elif msg.type == "control_change":
-                    control_change_duration +=  msg.time
-                elif msg.type == "time_signature":
-                    time_signatures.append((msg.numerator, msg.denominator))
-                    ts_counter += 1
-                    bar_lenght = tpb * msg.numerator * (4 / msg.denominator)
-                elif msg.type == "set_tempo":
-                    bpms.append(mido.tempo2bpm(msg.tempo))
 
                 if note_or_rest:
                     note_score.append(note)
