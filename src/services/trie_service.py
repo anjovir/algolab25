@@ -40,7 +40,14 @@ class TrieService:
         score = self._midi_service.read_midi_file(file_path)
         return self._insert_to_trie(score, mc_order)
 
-    def process_midi_files(self, directory, mc_order):
+    def process_midi_files(self, directory: str, mc_order: int):
+        """
+        Processes all the midi-files in a directory
+
+        Args:
+            directory (string)
+            mc_order (int) Markov chain order
+        """
         for filename in os.listdir(directory):
             if filename.endswith(".mid"):
                 file_path = os.path.join(directory, filename)
@@ -129,6 +136,50 @@ class TrieService:
             quantum_of_notes = len(rhythm_score)
             note_score = self.generate_song(sequence[0], quantum_of_notes, 3)
         return (list(zip(note_score, rhythm_score)), rhythm_score_bar_lengths)
+    
+    def _generate_next_note(self, sequence, option):
+        """
+        Generates next note based on used parameters
+
+        Args:
+            sequence (list)
+            option (int)
+        
+        Returns:
+            option 1: tuple (note, rhythm)
+            option 2: int (rhythm)
+            option 3: int (pitch)
+        """
+        if option == 1:
+            generated_note = self.trie.get_next_note(sequence)
+        elif option == 2:
+            generated_note = self.trie_rhythm.get_next_note(sequence)
+        elif option == 3:
+            generated_note = self.trie_notes.get_next_note(sequence)
+        return generated_note
+    
+    def _generate_next_note_again(self, sequence, option):
+        """
+        Generates new sequence if markov chain get starved of next notes
+
+        Args:
+            sequence (list)
+            option (int)
+
+        Returns:
+            generated note tuple (option 1), int (options 2 and 3)
+        """
+        sequence = self.generate_random_sequence_from_data(len(sequence), option)
+        if option == 1:
+            generated_note = self.trie.get_next_note(sequence)
+        elif option == 2:
+            sequence = sequence[1]
+            generated_note = self.trie_rhythm.get_next_note(sequence)
+        elif option == 3:
+            sequence = sequence[0]
+            generated_note = self.trie_notes.get_next_note(sequence)
+            
+        return generated_note
 
     def generate_song(self, sequence, length, option):
         """
@@ -148,28 +199,15 @@ class TrieService:
             markov_chain_song.append(s)
         while_counter = 0
         while length > 0:
-            if option == 1:
-                generated_note = self.trie.get_next_note(sequence)
-            elif option == 2:
-                generated_note = self.trie_rhythm.get_next_note(sequence)
-            elif option == 3:
-                generated_note = self.trie_notes.get_next_note(sequence)
+            generated_note = self._generate_next_note(sequence, option)
 
             # Sometimes there is no next element (note) for the sequence, this is a workaround
             while not generated_note:
                 while_counter += 1
-                sequence = self.generate_random_sequence_from_data(
-                    len(sequence), option)
-                if option == 1:
-                    generated_note = self.trie.get_next_note(sequence)
-                elif option == 2:
-                    sequence = sequence[1]
-                    generated_note = self.trie_rhythm.get_next_note(sequence)
-                elif option == 3:
-                    sequence = sequence[0]
-                    generated_note = self.trie_notes.get_next_note(sequence)
+                generated_note = self._generate_next_note_again(sequence, option)
                 if while_counter > 100:
                     return False
+
             markov_chain_song.append(generated_note)
             sequence.pop(0)
             sequence.append(generated_note)

@@ -63,6 +63,25 @@ class TestTrie(unittest.TestCase):
         directory = "src/data/midi_test_data"
         result = self.trie_service.process_midi_files(directory, 3)
         self.assertTrue(result)
+    
+    def test_generate_next_note(self):
+        file_path = "src\\data\\midi_test_data/Super Mario Bross (Theme Song) - melody.mid"
+        self.trie_service._read_file(file_path, self.order)
+        notes = self.trie_service.trie_notes.get_unique_sequences(1)        
+        seq = self.trie_service.generate_random_sequence_from_data(1,3)
+        option = 3
+        next_note = self.trie_service._generate_next_note(seq[0], option)
+        self.assertTrue([next_note] in notes)
+    
+    def test_generate_next_note_again2(self):
+        file_path = "src\\data\\midi_test_data/Jerry C - Canon Rock - melody.mid"
+        self.trie_service._read_file(file_path, self.order)
+        notes = self.trie_service.trie.get_unique_sequences(1)        
+        seq = self.trie_service.generate_random_sequence_from_data(1,1)
+        option = 1
+        next_note = self.trie_service._generate_next_note_again(seq, option)
+        self.assertTrue([next_note] in notes)
+
         
 
 
