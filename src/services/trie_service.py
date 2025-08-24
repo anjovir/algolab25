@@ -24,7 +24,6 @@ class TrieService:
         self.trie_notes = Trie(self.root_notes)
         self.root_rhythm = TrieNode()
         self.trie_rhythm = Trie(self.root_rhythm)
-        self._mc_order = order
         self._trie_read_succesfully = False
         self._midi_service = MidiService()
 
@@ -107,7 +106,7 @@ class TrieService:
         if option == 1:
             seqs = self.trie.get_unique_sequences(order)
             return seqs[random.randint(0, (len(seqs) - 1))]
-        if option == 2 or option == 3:
+        if option in [2,3]:
             rhythm_seqs = self.trie_rhythm.get_unique_sequences(1)
             rhythm_seq = rhythm_seqs[random.randint(0, (len(rhythm_seqs) - 1))]
             note_seqs = self.trie_notes.get_unique_sequences(order)
@@ -136,7 +135,7 @@ class TrieService:
             quantum_of_notes = len(rhythm_score)
             note_score = self.generate_song(sequence[0], quantum_of_notes, 3)
         return (list(zip(note_score, rhythm_score)), rhythm_score_bar_lengths)
-    
+
     def _generate_next_note(self, sequence, option):
         """
         Generates next note based on used parameters
@@ -157,7 +156,7 @@ class TrieService:
         elif option == 3:
             generated_note = self.trie_notes.get_next_note(sequence)
         return generated_note
-    
+
     def _generate_next_note_again(self, sequence, option):
         """
         Generates new sequence if markov chain get starved of next notes
@@ -178,7 +177,7 @@ class TrieService:
         elif option == 3:
             sequence = sequence[0]
             generated_note = self.trie_notes.get_next_note(sequence)
-            
+
         return generated_note
 
     def generate_song(self, sequence, length, option):
