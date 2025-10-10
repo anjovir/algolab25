@@ -36,7 +36,7 @@ class Trie:
                     break
                 index = score[n+i]
                 if index not in curr_node.children or curr_node.children[index] is None:
-                    curr_node.children[index] = [TrieNode(), 1]
+                    curr_node.children[index] = [TrieNode(), 0]
 
                 curr_node.children[index][1] += 1
                 curr_node = curr_node.children[index][0]
